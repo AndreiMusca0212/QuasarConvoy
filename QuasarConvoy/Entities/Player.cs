@@ -25,43 +25,70 @@ namespace QuasarConvoy.Entities
                 Right = Keys.D,
 
             };
+        bool isAnimated = false;
+        float angSpeed = 0.1f;
 
-        
         #endregion
-
-        public Player(ContentManager Content):base(Content)
+        
+        public Player(ContentManager Content,bool animated):base(Content)
         {
-            _animations = new Dictionary<string, Animation>()
+            if (animated)
+                isAnimated = true;
+            else
+                _texture = Content.Load<Texture2D>("mule");
+            scale = 0.3f;
+            Origin = new Vector2(_texture.Width / 2, _texture.Height / 2);
+            Speed = 0.5f;
+            /*_animations = new Dictionary<string, Animation>()
             {
-                {"W_Right", new Animation(Content.Load<Texture2D>("bbw_R"),4) },
-                {"W_Left", new Animation(Content.Load<Texture2D>("bbw_L"),4) },
-                {"W_Front", new Animation(Content.Load<Texture2D>("bbw_F"),4) },
-
             };
             _animationManager = new AnimationManager(_animations.First().Value);
-            scale = 4;
+            scale = 4;*/
+
         }
+        
 
         protected virtual void Move()
         {
             if (Keyboard.GetState().IsKeyDown(Input.Up))
             {
-                Velocity.Y -= Speed;
+                Velocity.Y -= Speed * (float)Math.Cos(Rotation);
+                Velocity.X += Speed * (float)Math.Sin(Rotation);
             }
             if (Keyboard.GetState().IsKeyDown(Input.Down))
             {
-                Velocity.Y += Speed;
+                Velocity.Y += Speed * (float)Math.Cos(Rotation);
+                Velocity.X -= Speed * (float)Math.Sin(Rotation);
             }
             if (Keyboard.GetState().IsKeyDown(Input.Left))
             {
-                Velocity.X -= Speed;
+                Rotation-=angSpeed;
             }
             if (Keyboard.GetState().IsKeyDown(Input.Right))
             {
-                Velocity.X += Speed;
+                Rotation += angSpeed;
+            }
+            if(Keyboard.GetState().IsKeyDown(Input.Reset))
+            {
+                Position = new Vector2(150, 150);
+                Velocity = Vector2.Zero;
             }
         }
 
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            if (_texture != null)
+                spriteBatch.Draw(_texture,
+                    Position,
+                    new Rectangle(0, 0, _texture.Width, _texture.Height),
+                    Color.White,
+                    Rotation,
+                    Origin,
+                    (float)scale,
+                    SpriteEffects.None,
+                    0f
+                    );
+        }
         protected void Collide(Sprite sprit)
         {
             if (isTouchingLeft(sprit) || isTouchingRight(sprit))
@@ -82,13 +109,15 @@ namespace QuasarConvoy.Entities
         public override void Update(GameTime gameTime, List<Sprite> sprites)
         {
             Move();
-            SetAnimations();
+            if(isAnimated)
+                SetAnimations();
             foreach (Sprite spri in sprites)
                 Collide(spri);
 
-            base.Update(gameTime, sprites);
+            if(isAnimated)base.Update(gameTime, sprites);
             Position += Velocity;
-            Velocity = Vector2.Zero;
+            
+            //Velocity = Vector2.Zero;
         }
     }
 }

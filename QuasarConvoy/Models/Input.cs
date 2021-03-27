@@ -11,5 +11,6 @@ namespace QuasarConvoy.Models
         public Keys Down { set; get; }
         public Keys Left { set; get; }
         public Keys Right { set; get; }
+        public Keys Reset { set; get; }
     }
 }

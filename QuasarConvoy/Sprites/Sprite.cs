@@ -18,29 +18,34 @@ namespace QuasarConvoy.Sprites
 
         protected Vector2 _position;
 
-        private Texture2D _texture;
+        public float scale = 4f;
 
-        public int scale = 4;
-        
 
         #endregion
 
         #region Properties
 
+        protected Texture2D _texture { set; get; }
         public virtual Vector2 Position
         {
             get { return _position; }
             set {_position = value;}
         }
 
+        protected float Rotation {
+            set;
+            
+            get; 
+        }
         public virtual Rectangle Collisionbox
         {
             get
             {
-                return new Rectangle((int)Position.X, (int)Position.Y, _texture.Width*scale, _texture.Height*scale);
+                return new Rectangle((int)Position.X, (int)Position.Y, _texture.Width*(int)scale, _texture.Height*(int)scale);
             }
         }
 
+        protected Vector2 Origin { set; get; }
 
         #endregion
 
@@ -54,7 +59,7 @@ namespace QuasarConvoy.Sprites
                     Color.White,
                     0f,
                     Vector2.Zero,
-                    (float)scale,
+                    scale,
                     SpriteEffects.None,
                     0f
                     );

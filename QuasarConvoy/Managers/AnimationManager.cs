@@ -20,7 +20,7 @@ namespace QuasarConvoy.Managers
             _animation = animation;
         }
 
-        public void Draw(SpriteBatch spriteBatch,int scale)
+        public void Draw(SpriteBatch spriteBatch,float scale)
         {
             spriteBatch.Draw(_animation.Texture,
                              Position,
@@ -28,7 +28,7 @@ namespace QuasarConvoy.Managers
                              Color.White,
                              0f,
                              Vector2.Zero,
-                             (float)scale,
+                             scale,
                              SpriteEffects.None,
                              0f);
         }
