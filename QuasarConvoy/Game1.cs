@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using QuasarConvoy.Managers;
 using QuasarConvoy.Models;
 using QuasarConvoy.Entities;
+using QuasarConvoy.Controls;
 
 namespace QuasarConvoy
 {
@@ -13,10 +14,9 @@ namespace QuasarConvoy
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-        private int ver = 0;
 
-        List<Sprite> _sprites;
-
+        private Color _backgroundColour = Color.MediumPurple;
+        private List<Component> _gameComponents;
 
         public Game1()
         {
@@ -27,7 +27,12 @@ namespace QuasarConvoy
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            IsMouseVisible = true;
+
+            _graphics.PreferredBackBufferWidth = 1366;
+            _graphics.PreferredBackBufferHeight = 764;
+            _graphics.IsFullScreen = false;
+            _graphics.ApplyChanges();
 
             base.Initialize();
         }
@@ -36,52 +41,57 @@ namespace QuasarConvoy
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            _sprites = new List<Sprite>
+            var startButton = new Button(Content.Load<Texture2D>("Controls/Button"), Content.Load<SpriteFont>("Fonts/Font"))
             {
-                new Player(Content,false)
-                {
-                    Position=new Vector2(100,100),
-                    Input=new Input()
-                    {
-                        Up=Keys.W,
-                        Down = Keys.S,
-                        Left=Keys.A,
-                        Right=Keys.D,
-                        Reset=Keys.R
-                    }
-                }
+                Position = new Vector2(_graphics.PreferredBackBufferWidth / 2 - 50, _graphics.PreferredBackBufferHeight / 2 - 50),
+                Text = "Start",
             };
-            ver = 1;
+
+            startButton.Click += startButton_Click;
+
+            var quitButton = new Button(Content.Load<Texture2D>("Controls/Button"), Content.Load<SpriteFont>("Fonts/Font"))
+            {
+                Position = new Vector2(_graphics.PreferredBackBufferWidth / 2 - 50, _graphics.PreferredBackBufferHeight / 2),
+                Text = "Quit",
+            };
+
+            quitButton.Click += QuitButton_Click;
+
+            _gameComponents = new List<Component>()
+            {
+                startButton,
+                quitButton,
+            };
+        }
+        private void startButton_Click(object sender, System.EventArgs e)
+        {
+            var random = new System.Random();
+
+            _backgroundColour = new Color(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255));
+        }
+        private void QuitButton_Click(object sender, System.EventArgs e)
+        {
+            Exit();
         }
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
-            foreach (var sprite in _sprites)
-                sprite.Update(gameTime,_sprites);
+            foreach (var component in _gameComponents)
+                component.Update(gameTime);
 
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Black);
+            GraphicsDevice.Clear(_backgroundColour);
 
-            _spriteBatch.Begin(SpriteSortMode.Deferred,
-              BlendState.AlphaBlend,
-              SamplerState.PointClamp,
-              null, null, null, null);
+            _spriteBatch.Begin();
 
-            foreach (var sprite in _sprites)
-                sprite.Draw(_spriteBatch);
-
-            if (ver == 0)
-               throw new System.Exception("Not loaded");
+            foreach (var component in _gameComponents)
+                component.Draw(gameTime, _spriteBatch);
 
             _spriteBatch.End();
-
 
             base.Draw(gameTime);
         }
