@@ -27,7 +27,7 @@ namespace QuasarConvoy.Entities
             };
         bool isAnimated = false;
         float angSpeed = 0.1f;
-
+        float speedCap = 4f;
         #endregion
         
         public Player(ContentManager Content,bool animated):base(Content)
@@ -38,7 +38,7 @@ namespace QuasarConvoy.Entities
                 _texture = Content.Load<Texture2D>("mule");
             scale = 0.3f;
             Origin = new Vector2(_texture.Width / 2, _texture.Height / 2);
-            Speed = 0.5f;
+            Speed = 0.1f;
             /*_animations = new Dictionary<string, Animation>()
             {
             };
@@ -72,6 +72,13 @@ namespace QuasarConvoy.Entities
             {
                 Position = new Vector2(150, 150);
                 Velocity = Vector2.Zero;
+                Rotation = 0f;
+            }
+            if(Keyboard.GetState().IsKeyDown(Input.Reset)&& Keyboard.GetState().IsKeyDown(Input.Right))
+            {
+                Position = new Vector2(150, 150);
+                Velocity = Vector2.Zero;
+                Rotation = (float)Math.PI/2;
             }
         }
 
@@ -105,19 +112,30 @@ namespace QuasarConvoy.Entities
             else
                 _animationManager.Play(_animations["W_Front"]);
         }
-
+        private void SpeedLimit()
+        {
+            if (Velocity.Length() > speedCap)
+            {
+                Velocity.Normalize();
+                Velocity*= speedCap;
+            }
+            
+        }
         public override void Update(GameTime gameTime, List<Sprite> sprites)
         {
             Move();
-            if(isAnimated)
+            if (isAnimated)
                 SetAnimations();
             foreach (Sprite spri in sprites)
                 Collide(spri);
 
-            if(isAnimated)base.Update(gameTime, sprites);
+            if (isAnimated) base.Update(gameTime, sprites);
+            SpeedLimit();
             Position += Velocity;
-            
+
             //Velocity = Vector2.Zero;
         }
+
+        
     }
 }

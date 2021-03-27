@@ -21,14 +21,17 @@ namespace QuasarConvoy
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
+            
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
+            _graphics.PreferredBackBufferWidth = 1366;
+            _graphics.PreferredBackBufferHeight = 764;
+            _graphics.IsFullScreen = false;
+            _graphics.ApplyChanges();
             base.Initialize();
         }
 
