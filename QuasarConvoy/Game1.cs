@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using QuasarConvoy.Managers;
 using QuasarConvoy.Models;
 using QuasarConvoy.Entities;
+using QuasarConvoy.Core;
 
 namespace QuasarConvoy
 {
@@ -15,8 +16,14 @@ namespace QuasarConvoy
         private SpriteBatch _spriteBatch;
         private int ver = 0;
 
+        private Camera _camera;
+
+        Player _player;
+
         List<Sprite> _sprites;
 
+        public static int ScreenWidth=1366;
+        public static int ScreenHeight=764;
 
         public Game1()
         {
@@ -28,10 +35,11 @@ namespace QuasarConvoy
 
         protected override void Initialize()
         {
-            _graphics.PreferredBackBufferWidth = 1366;
-            _graphics.PreferredBackBufferHeight = 764;
+            _graphics.PreferredBackBufferWidth = ScreenWidth;
+            _graphics.PreferredBackBufferHeight = ScreenHeight;
             _graphics.IsFullScreen = false;
             _graphics.ApplyChanges();
+            
             base.Initialize();
         }
 
@@ -39,20 +47,28 @@ namespace QuasarConvoy
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            _camera = new Camera();
+
+            _player = new Player(Content, false)
+            {
+                Position = new Vector2(100, 100),
+                Input = new Input()
+                {
+                    Up = Keys.W,
+                    Down = Keys.S,
+                    Left = Keys.A,
+                    Right = Keys.D,
+                    Reset = Keys.R
+                }
+            };
             _sprites = new List<Sprite>
             {
-                new Player(Content,false)
+                new Sprite(Content.Load<Texture2D>("nebula"))
                 {
-                    Position=new Vector2(100,100),
-                    Input=new Input()
-                    {
-                        Up=Keys.W,
-                        Down = Keys.S,
-                        Left=Keys.A,
-                        Right=Keys.D,
-                        Reset=Keys.R
-                    }
-                }
+                    scale=1f
+                    },
+                _player
+
             };
             ver = 1;
         }
@@ -65,6 +81,8 @@ namespace QuasarConvoy
             foreach (var sprite in _sprites)
                 sprite.Update(gameTime,_sprites);
 
+            _camera.Follow(_player);
+
             base.Update(gameTime);
         }
 
@@ -75,7 +93,7 @@ namespace QuasarConvoy
             _spriteBatch.Begin(SpriteSortMode.Deferred,
               BlendState.AlphaBlend,
               SamplerState.PointClamp,
-              null, null, null, null);
+              null, null, null, _camera.Transform);
 
             foreach (var sprite in _sprites)
                 sprite.Draw(_spriteBatch);
