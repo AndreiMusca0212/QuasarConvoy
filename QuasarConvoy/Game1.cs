@@ -7,6 +7,8 @@ using QuasarConvoy.Managers;
 using QuasarConvoy.Models;
 using QuasarConvoy.Entities;
 using QuasarConvoy.Core;
+using QuasarConvoy.Ambient;
+using QuasarConvoy.Entities.Ships;
 
 namespace QuasarConvoy
 {
@@ -20,7 +22,11 @@ namespace QuasarConvoy
 
         Player _player;
 
+        BackGround bg;
+
         List<Sprite> _sprites;
+
+        List<Ship> _convoy;
 
         public static int ScreenWidth=1366;
         public static int ScreenHeight=764;
@@ -49,28 +55,29 @@ namespace QuasarConvoy
 
             _camera = new Camera();
 
-            _player = new Player(Content, false)
+            
+
+            _sprites = new List<Sprite>
+            {    
+                
+            };
+
+            _convoy = new List<Ship>
             {
-                Position = new Vector2(100, 100),
-                Input = new Input()
+                new Mule1(Content),
+                new Mule1(Content)
                 {
-                    Up = Keys.W,
-                    Down = Keys.S,
-                    Left = Keys.A,
-                    Right = Keys.D,
-                    Reset = Keys.R
+                    Position=new Vector2(100,100)
                 }
             };
-            _sprites = new List<Sprite>
-            {
-                new Sprite(Content.Load<Texture2D>("nebula"))
-                {
-                    scale=1f
-                    },
-                _player
-
-            };
             ver = 1;
+
+            _player = new Player(_convoy[0]);
+
+            bg = new BackGround(Content.Load<Texture2D>("nebula"))
+            {
+                scale = 1f
+            };
         }
 
         protected override void Update(GameTime gameTime)
@@ -80,8 +87,16 @@ namespace QuasarConvoy
 
             foreach (var sprite in _sprites)
                 sprite.Update(gameTime,_sprites);
-
-            _camera.Follow(_player);
+            foreach (var ship in _convoy)
+            {
+                if (!ship.IsControlled)
+                {
+                    ship.Update(gameTime, _sprites);
+                    ship.Follow(_player.ControlledShip);
+                }
+            }   
+            _player.Update(gameTime, _sprites);
+            _camera.Follow(_player.ControlledShip);
 
             base.Update(gameTime);
         }
@@ -90,13 +105,16 @@ namespace QuasarConvoy
         {
             GraphicsDevice.Clear(Color.Black);
 
-            _spriteBatch.Begin(SpriteSortMode.Deferred,
+            _spriteBatch.Begin(SpriteSortMode.FrontToBack,
               BlendState.AlphaBlend,
               SamplerState.PointClamp,
               null, null, null, _camera.Transform);
 
             foreach (var sprite in _sprites)
                 sprite.Draw(_spriteBatch);
+            foreach (var ship in _convoy)
+                ship.Draw(_spriteBatch);
+            bg.Draw(_spriteBatch);
 
             if (ver == 0)
                throw new System.Exception("Not loaded");

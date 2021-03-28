@@ -12,7 +12,7 @@ using QuasarConvoy.Models;
 
 namespace QuasarConvoy.Sprites
 {
-    class Sprite
+    class Sprite:Component
     {
         #region Fields
 
@@ -53,7 +53,7 @@ namespace QuasarConvoy.Sprites
         #endregion
 
 
-        public virtual void Draw(SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch)
         {
             if (_texture != null)
                 spriteBatch.Draw(_texture,
@@ -64,11 +64,15 @@ namespace QuasarConvoy.Sprites
                     Vector2.Zero,
                     scale,
                     SpriteEffects.None,
-                    0f
+                    0.1f
                     );
         }
 
-        
+        public override void Update(GameTime gameTime, SpriteBatch spriteBatch)
+        {
+            
+        }
+
         public Sprite(ContentManager Content)
         { 
         
