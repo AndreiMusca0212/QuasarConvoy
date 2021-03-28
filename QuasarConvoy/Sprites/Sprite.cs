@@ -45,8 +45,11 @@ namespace QuasarConvoy.Sprites
             }
         }
 
-        protected Vector2 Origin { set; get; }
+        public Vector2 Origin {set; get; }
 
+        
+
+        
         #endregion
 
 
