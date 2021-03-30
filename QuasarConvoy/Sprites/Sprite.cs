@@ -20,6 +20,7 @@ namespace QuasarConvoy.Sprites
 
         public float scale = 4f;
 
+        public float rott;
 
         #endregion
 
@@ -32,10 +33,17 @@ namespace QuasarConvoy.Sprites
             set {_position = value;}
         }
 
-        protected float Rotation {
-            set;
-            
-            get; 
+        public float Rotation {
+            set
+            {
+                rott = value;
+                while (rott > Math.PI)
+                    rott -= (float)Math.PI * 2;
+                while(rott<-1*Math.PI)
+                    rott += (float)Math.PI * 2;
+            }
+
+            get { return rott; }
         }
         public virtual Rectangle Collisionbox
         {

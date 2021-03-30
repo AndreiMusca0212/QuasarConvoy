@@ -18,6 +18,7 @@ namespace QuasarConvoy
         private SpriteBatch _spriteBatch;
         private int ver = 0;
 
+        SpriteFont _font;
         private Camera _camera;
 
         Player _player;
@@ -78,6 +79,8 @@ namespace QuasarConvoy
             {
                 scale = 1f
             };
+
+            _font = Content.Load<SpriteFont>("Font");
         }
 
         protected override void Update(GameTime gameTime)
@@ -114,6 +117,16 @@ namespace QuasarConvoy
                 sprite.Draw(_spriteBatch);
             foreach (var ship in _convoy)
                 ship.Draw(_spriteBatch);
+            _spriteBatch.DrawString(_font,
+                string.Format("Rot={0} Ang={1}",
+                _convoy[1].Rotation, _convoy[1].Angle),
+                new Vector2(_convoy[1].Position.X, _convoy[1].Position.Y + 30),
+                Color.White,
+                0f,
+                new Vector2(0,0),
+                1f,
+                SpriteEffects.None,
+                0.6f);
             bg.Draw(_spriteBatch);
 
             if (ver == 0)

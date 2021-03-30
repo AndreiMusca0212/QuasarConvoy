@@ -19,6 +19,8 @@ namespace QuasarConvoy.Entities
         protected float SpeedCap { set; get; }
         protected float AngSpeed { set; get; }
         public bool IsControlled { set; get; }
+
+        public float Angle { set; get; }
         public Ship(ContentManager content):base(content)
         {
             scale = 0.3f;
@@ -38,16 +40,39 @@ namespace QuasarConvoy.Entities
             }
         }
 
+        public float TrueAngle(float a1,float a2)
+        {
+            float ta = a1;
+            if (a1 > 0)
+                if (a2 > 0)
+                    ta=Math.Abs(a1 - a2);
+                else
+                    ta= a1 + (-1 * a2)<2*(float)Math.PI- (a1 + (-1 * a2)) ? a1 + (-1 * a2): 2 * (float)Math.PI - (a1 + (-1 * a2));
+            else
+                if (a2 > 0)
+                    ta= a2 + (-1 * a1) < 2 * (float)Math.PI - (a2 + (-1 * a1)) ? a2 + (-1 * a1) : 2 * (float)Math.PI - (a2 + (-1 * a1));
+                else
+                    ta= Math.Abs(a1-a2);
+            if (ta > Math.PI*2)
+                ta -= (float)Math.PI * 2;
+            else
+                if (ta < 0)
+                    ta += (float)Math.PI*2;
+            return ta;
+        }
         public void MoveTo(Vector2 destination)
         {
             Vector2 dist = new Vector2(this.Position.X - destination.X, this.Position.Y - destination.Y);
-            float angle =(float) Math.Atan2(dist.X,-dist.Y) + (float)Math.PI;
-            if (Math.Abs(this.Rotation-angle)>0.2)
+            Angle = (float) Math.Atan2(-dist.X,dist.Y);
+            //angle = (float)(Math.Acos(Vector2.Dot(dist,new Vector2(10*(float)Math.Cos(Rotation), 10 * (float)Math.Sin(Rotation))) / dist.Length()));
+            
+            if (TrueAngle(Rotation,Angle)>0.2)
             {
-                if (this.Rotation > angle)
+                if (TrueAngle(Rotation-AngSpeed,Angle) < TrueAngle(Rotation + AngSpeed, Angle))
                     Rotation -= AngSpeed;
                 else
                     Rotation += AngSpeed;
+
             }
             else
                 Forward();
@@ -147,6 +172,8 @@ namespace QuasarConvoy.Entities
             if (Velocity.Length()>0)
             {
                 Velocity -= res;
+                if (Velocity.Length() < amount)
+                    Velocity = Vector2.Zero;
             }
         }
 
@@ -160,7 +187,7 @@ namespace QuasarConvoy.Entities
 
             if (isAnimated) base.Update(gameTime, sprites);
             SpeedLimit();
-            Rezistance(0.01f);
+            Rezistance(0.04f);
             Position += Velocity;
 
             //Velocity = Vector2.Zero;
