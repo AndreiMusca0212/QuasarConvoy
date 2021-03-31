@@ -35,9 +35,9 @@ namespace QuasarConvoy
         {
             IsMouseVisible = true;
 
-            _graphics.PreferredBackBufferWidth = 1366;
-            _graphics.PreferredBackBufferHeight = 764;
-            _graphics.IsFullScreen = false;
+            _graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+            _graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+            _graphics.IsFullScreen = true;
             _graphics.ApplyChanges();
 
             base.Initialize();
@@ -66,7 +66,7 @@ namespace QuasarConvoy
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Purple);
+            GraphicsDevice.Clear(Color.Black);
 
             currentState.Draw(gameTime, _spriteBatch);
 
