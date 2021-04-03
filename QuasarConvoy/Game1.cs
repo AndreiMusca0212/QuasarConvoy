@@ -27,7 +27,7 @@ namespace QuasarConvoy
 
         List<Sprite> _sprites;
 
-        List<Ship> _convoy;
+        //List<Ship> _convoy;
 
         public static int ScreenWidth=1366;
         public static int ScreenHeight=764;
@@ -59,21 +59,25 @@ namespace QuasarConvoy
             
 
             _sprites = new List<Sprite>
-            {    
-                
-            };
-
-            _convoy = new List<Ship>
             {
                 new Mule1(Content),
                 new Mule1(Content)
                 {
                     Position=new Vector2(100,100)
+                },
+                new Mule1(Content)
+                {
+                    Position=new Vector2(200,100)
+                },
+                new Mule1(Content)
+                {
+                    Position=new Vector2(300,100)
                 }
             };
+
             ver = 1;
 
-            _player = new Player(_convoy[0]);
+            _player = new Player((Ship)_sprites[0]);
 
             bg = new BackGround(Content.Load<Texture2D>("nebula"))
             {
@@ -83,21 +87,30 @@ namespace QuasarConvoy
             _font = Content.Load<SpriteFont>("Font");
         }
 
+        private void ShipUpdate(Ship sprite,GameTime gameTime)
+        {
+            if (!sprite.IsControlled)
+            {
+                sprite.Update(gameTime, _sprites);
+                sprite.Follow(_player.ControlledShip);
+            }
+        }
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
             foreach (var sprite in _sprites)
-                sprite.Update(gameTime,_sprites);
-            foreach (var ship in _convoy)
             {
-                if (!ship.IsControlled)
+                if (sprite is Ship)
                 {
-                    ship.Update(gameTime, _sprites);
-                    ship.Follow(_player.ControlledShip);
+                    ShipUpdate((Ship)sprite,gameTime);
                 }
-            }   
+                else
+                {
+                    sprite.Update(gameTime, _sprites);
+                }
+            }
             _player.Update(gameTime, _sprites);
             _camera.Follow(_player.ControlledShip);
 
@@ -115,18 +128,17 @@ namespace QuasarConvoy
 
             foreach (var sprite in _sprites)
                 sprite.Draw(_spriteBatch);
-            foreach (var ship in _convoy)
-                ship.Draw(_spriteBatch);
+            /*
             _spriteBatch.DrawString(_font,
-                string.Format("Rot={0} Ang={1}",
-                _convoy[1].Rotation, _convoy[1].Angle),
-                new Vector2(_convoy[1].Position.X, _convoy[1].Position.Y + 30),
+                string.Format("auxX={0} auxY={1}",
+                _sprites[1].KeepAway(_sprites), _sprites[1].Angle),
+                new Vector2(_sprites[1].Position.X, _sprites[1].Position.Y + 30),
                 Color.White,
                 0f,
                 new Vector2(0,0),
                 1f,
                 SpriteEffects.None,
-                0.6f);
+                0.6f);*/
             bg.Draw(_spriteBatch);
 
             if (ver == 0)

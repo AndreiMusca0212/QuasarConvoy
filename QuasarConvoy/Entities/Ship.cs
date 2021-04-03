@@ -26,9 +26,13 @@ namespace QuasarConvoy.Entities
             scale = 0.3f;
         }
 
+        public Vector2 Distance(Ship dest)
+        {
+            return new Vector2(this.Position.X - dest.Position.X, this.Position.Y - dest.Position.Y);
+        }
         public void Follow(Ship mainShip)
         {
-            Vector2 dist = new Vector2(this.Position.X - mainShip.Position.X, this.Position.Y - mainShip.Position.Y);
+            Vector2 dist = Distance(mainShip);
             if (dist.Length()>200)
             {
                 MoveTo(mainShip.Position);
@@ -140,12 +144,19 @@ namespace QuasarConvoy.Entities
                     0.2f
                     );
         }
-        protected void Collide(Sprite sprit)
+        protected void KeepAway(Ship sprit,float minDist)
         {
-            if (isTouchingLeft(sprit) || isTouchingRight(sprit))
-                Velocity.X = 0;
-            if (isTouchingTop(sprit) || isTouchingBot(sprit))
-                Velocity.Y = 0;
+            Vector2 dist = Distance(sprit);
+            Vector2 aux = dist;
+            float angelDist = (float)Math.Atan2(-dist.X, dist.Y);
+            float angleVel= (float)Math.Atan2(-Velocity.X, Velocity.Y);
+            if (dist.Length() < minDist)
+            {
+                aux.Normalize();
+                aux= aux* (minDist- dist.Length());
+                Position += aux;
+            }
+
         }
         protected override void SetAnimations()
         {
@@ -182,12 +193,14 @@ namespace QuasarConvoy.Entities
             Move();
             if (isAnimated)
                 SetAnimations();
-            foreach (Sprite spri in sprites)
-                Collide(spri);
+            
 
             if (isAnimated) base.Update(gameTime, sprites);
             SpeedLimit();
             Rezistance(0.04f);
+            foreach (Sprite spri in sprites)
+                if (spri is Ship && spri != this)
+                    KeepAway((Ship)spri,_texture.Width*scale);
             Position += Velocity;
 
             //Velocity = Vector2.Zero;

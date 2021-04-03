@@ -25,9 +25,7 @@ namespace QuasarConvoy.Entities
                 Right = Keys.D,
 
             };
-        bool isAnimated = false;
-        float angSpeed = 0.1f;
-        float speedCap = 4f;
+        
         int shipIndex=0;
         
         public Ship ControlledShip { set; get; }
