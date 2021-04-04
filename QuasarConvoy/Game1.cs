@@ -23,7 +23,9 @@ namespace QuasarConvoy
 
         Player _player;
 
-        BackGround bg;
+        Background bg;
+
+        BackgroundManager BackgroundManager;
 
         List<Sprite> _sprites;
 
@@ -79,12 +81,13 @@ namespace QuasarConvoy
 
             _player = new Player((Ship)_sprites[0]);
 
-            bg = new BackGround(Content.Load<Texture2D>("nebula"))
-            {
-                scale = 1f
-            };
+            bg = new Background(Content.Load<Texture2D>("spaceBG"));
+
+            BackgroundManager = new BackgroundManager(Content.Load<Texture2D>("starparticle"));
 
             _font = Content.Load<SpriteFont>("Font");
+
+
         }
 
         private void ShipUpdate(Ship sprite,GameTime gameTime)
@@ -100,6 +103,8 @@ namespace QuasarConvoy
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            BackgroundManager.Update(_camera);
+            
             foreach (var sprite in _sprites)
             {
                 if (sprite is Ship)
@@ -114,6 +119,8 @@ namespace QuasarConvoy
             _player.Update(gameTime, _sprites);
             _camera.Follow(_player.ControlledShip);
 
+            
+
             base.Update(gameTime);
         }
 
@@ -121,6 +128,11 @@ namespace QuasarConvoy
         {
             GraphicsDevice.Clear(Color.Black);
 
+            _spriteBatch.Begin();
+                bg.Draw(_spriteBatch);
+                BackgroundManager.Draw(_spriteBatch);
+            _spriteBatch.End();
+            
             _spriteBatch.Begin(SpriteSortMode.FrontToBack,
               BlendState.AlphaBlend,
               SamplerState.PointClamp,
@@ -128,18 +140,18 @@ namespace QuasarConvoy
 
             foreach (var sprite in _sprites)
                 sprite.Draw(_spriteBatch);
-            /*
+            
             _spriteBatch.DrawString(_font,
-                string.Format("auxX={0} auxY={1}",
-                _sprites[1].KeepAway(_sprites), _sprites[1].Angle),
-                new Vector2(_sprites[1].Position.X, _sprites[1].Position.Y + 30),
+                string.Format("posX={0} posY={1}",
+                _sprites[0].Position.X, _sprites[0].Position.Y),
+                new Vector2(_sprites[0].Position.X, _sprites[0].Position.Y + 30),
                 Color.White,
                 0f,
                 new Vector2(0,0),
                 1f,
                 SpriteEffects.None,
-                0.6f);*/
-            bg.Draw(_spriteBatch);
+                0.6f);
+            
 
             if (ver == 0)
                throw new System.Exception("Not loaded");

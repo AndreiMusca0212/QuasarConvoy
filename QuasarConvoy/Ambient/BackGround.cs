@@ -6,22 +6,26 @@ using System.Text;
 
 namespace QuasarConvoy.Ambient
 {
-    class BackGround:Component
+    class Background:Component
     {
         protected Vector2 _position;
 
-        public float scale = 4f;
+        public float scale;
         
+        protected float Layer { set; get; }
         public virtual Vector2 Position
         {
             get { return _position; }
             set { _position = value; }
         }
 
-        Texture2D _texture;
-        public BackGround(Texture2D texture)
+        protected Texture2D _texture;
+        public Background(Texture2D texture)
         {
             _texture = texture;
+            Layer = 0f;
+
+            scale = Game1.ScreenWidth/(float)texture.Width;
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -35,7 +39,7 @@ namespace QuasarConvoy.Ambient
                     Vector2.Zero,
                     scale,
                     SpriteEffects.None,
-                    0f
+                    Layer
                     );
         }
 
