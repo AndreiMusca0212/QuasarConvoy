@@ -18,8 +18,8 @@ namespace QuasarConvoy.Core
         {
             FollowedSprite = target;
             var position = Matrix.CreateTranslation(
-                    -target.Position.X - (target.Collisionbox.Width / 2),
-                    -target.Position.Y - (target.Collisionbox.Height/2),
+                    -target.Position.X - (target._texture.Width*target.scale / 2),
+                    -target.Position.Y - (target._texture.Height * target.scale / 2),
                     0);
             var offset = Matrix.CreateTranslation(
                 Game1.ScreenWidth / 2,

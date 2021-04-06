@@ -1,24 +1,21 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using QuasarConvoy.Core;
+using QuasarConvoy.Sprites;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace QuasarConvoy.Ambient
 {
-    class Particle
+    class Particle:Sprite
     {
-        public Vector2 Position { set; get; }
-        public Texture2D _texture;
         public bool isRemoved = false;
         public Vector2 Velocity { set; get; }
-        float scale;
-        public Particle(Texture2D texture, float sca)
+        public Particle(Texture2D texture, float sca):base(texture)
         {
-            _texture = texture;
             scale = sca;
-            
+            Layer = 0.1f;
         }
 
         public void Update(Camera cam)
@@ -26,20 +23,6 @@ namespace QuasarConvoy.Ambient
             Position += (-1) * cam.velocity*scale;
             if (Position.X > Game1.ScreenWidth+10 || Position.X < -10 || Position.Y < -10 || Position.Y > Game1.ScreenHeight+10)
                 isRemoved = true;
-        }
-        public void Draw(SpriteBatch spriteBatch)
-        {
-            if (_texture != null)
-                spriteBatch.Draw(_texture,
-                    Position,
-                    new Rectangle(0, 0, _texture.Width, _texture.Height),
-                    Color.White,
-                    0f,
-                    Vector2.Zero,
-                    scale,
-                    SpriteEffects.None,
-                    0.1f
-                    );
         }
     }
 }

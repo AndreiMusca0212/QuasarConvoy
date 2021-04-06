@@ -3,44 +3,17 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using QuasarConvoy.Sprites;
 
 namespace QuasarConvoy.Ambient
 {
-    class Background:Component
+    class Background:Sprite
     {
-        protected Vector2 _position;
-
-        public float scale;
-        
-        protected float Layer { set; get; }
-        public virtual Vector2 Position
+        public Background(Texture2D texture):base(texture)
         {
-            get { return _position; }
-            set { _position = value; }
-        }
-
-        protected Texture2D _texture;
-        public Background(Texture2D texture)
-        {
-            _texture = texture;
             Layer = 0f;
 
             scale = Game1.ScreenWidth/(float)texture.Width;
-        }
-
-        public override void Draw(SpriteBatch spriteBatch)
-        {
-            if (_texture != null)
-                spriteBatch.Draw(_texture,
-                    Position,
-                    new Rectangle(0, 0, _texture.Width, _texture.Height),
-                    Color.White,
-                    0f,
-                    Vector2.Zero,
-                    scale,
-                    SpriteEffects.None,
-                    Layer
-                    );
         }
 
         public override void Update(GameTime gameTime, SpriteBatch spriteBatch)

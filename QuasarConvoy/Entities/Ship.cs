@@ -10,26 +10,18 @@ using System.Text;
 
 namespace QuasarConvoy.Entities
 {
-    class Ship:SpriteAnimated
+    class Ship:SpriteMoving
     {
         bool isAnimated = false;
         
         //bool isControlled = false;
-
-        protected float SpeedCap { set; get; }
-        protected float AngSpeed { set; get; }
         public bool IsControlled { set; get; }
 
-        public float Angle { set; get; }
         public Ship(ContentManager content):base(content)
         {
             scale = 0.3f;
         }
 
-        public Vector2 Distance(Ship dest)
-        {
-            return new Vector2(this.Position.X - dest.Position.X, this.Position.Y - dest.Position.Y);
-        }
         public void Follow(Ship mainShip)
         {
             Vector2 dist = Distance(mainShip);
@@ -43,45 +35,8 @@ namespace QuasarConvoy.Entities
                     Rezistance(0.2f);
             }
         }
-
-        public float TrueAngle(float a1,float a2)
-        {
-            float ta = a1;
-            if (a1 > 0)
-                if (a2 > 0)
-                    ta=Math.Abs(a1 - a2);
-                else
-                    ta= a1 + (-1 * a2)<2*(float)Math.PI- (a1 + (-1 * a2)) ? a1 + (-1 * a2): 2 * (float)Math.PI - (a1 + (-1 * a2));
-            else
-                if (a2 > 0)
-                    ta= a2 + (-1 * a1) < 2 * (float)Math.PI - (a2 + (-1 * a1)) ? a2 + (-1 * a1) : 2 * (float)Math.PI - (a2 + (-1 * a1));
-                else
-                    ta= Math.Abs(a1-a2);
-            if (ta > Math.PI*2)
-                ta -= (float)Math.PI * 2;
-            else
-                if (ta < 0)
-                    ta += (float)Math.PI*2;
-            return ta;
-        }
-        public void MoveTo(Vector2 destination)
-        {
-            Vector2 dist = new Vector2(this.Position.X - destination.X, this.Position.Y - destination.Y);
-            Angle = (float) Math.Atan2(-dist.X,dist.Y);
-            //angle = (float)(Math.Acos(Vector2.Dot(dist,new Vector2(10*(float)Math.Cos(Rotation), 10 * (float)Math.Sin(Rotation))) / dist.Length()));
-            
-            if (TrueAngle(Rotation,Angle)>0.2)
-            {
-                if (TrueAngle(Rotation-AngSpeed,Angle) < TrueAngle(Rotation + AngSpeed, Angle))
-                    Rotation -= AngSpeed;
-                else
-                    Rotation += AngSpeed;
-
-            }
-            else
-                Forward();
-            
-        }
+        
+        
         public virtual void Move(Input Input=null, Ship MainShip = null)
         {
             if (Input != null)
@@ -118,38 +73,13 @@ namespace QuasarConvoy.Entities
             
         }
 
-        private void BackWard()
-        {
-            Velocity.Y += Speed * (float)Math.Cos(Rotation);
-            Velocity.X -= Speed * (float)Math.Sin(Rotation);
-        }
-
-        private void Forward()
-        {
-            Velocity.Y -= Speed * (float)Math.Cos(Rotation);
-            Velocity.X += Speed * (float)Math.Sin(Rotation);
-        }
-
-        public override void Draw(SpriteBatch spriteBatch)
-        {
-            if (_texture != null)
-                spriteBatch.Draw(_texture,
-                    Position,
-                    new Rectangle(0, 0, _texture.Width, _texture.Height),
-                    Color.White,
-                    Rotation,
-                    Origin,
-                    scale,
-                    SpriteEffects.None,
-                    0.2f
-                    );
-        }
+        
         protected void KeepAway(Ship sprit,float minDist)
         {
             Vector2 dist = Distance(sprit);
             Vector2 aux = dist;
-            float angelDist = (float)Math.Atan2(-dist.X, dist.Y);
-            float angleVel= (float)Math.Atan2(-Velocity.X, Velocity.Y);
+            /*float angelDist = (float)Math.Atan2(-dist.X, dist.Y);
+            float angleVel= (float)Math.Atan2(-Velocity.X, Velocity.Y);*/
             if (dist.Length() < minDist)
             {
                 aux.Normalize();
@@ -158,44 +88,10 @@ namespace QuasarConvoy.Entities
             }
 
         }
-        protected override void SetAnimations()
-        {
-            if (Velocity.X > 0)
-                _animationManager.Play(_animations["W_Right"]);
-            else if (Velocity.X < 0)
-                _animationManager.Play(_animations["W_Left"]);
-            else
-                _animationManager.Play(_animations["W_Front"]);
-        }
-        private void SpeedLimit()
-        {
-            if (Velocity.Length() > SpeedCap)
-            {
-                Velocity.Normalize();
-                Velocity *= SpeedCap;
-            }
-        }
-        private void Rezistance(float amount)
-        {
-            Vector2 aux = Velocity;
-            aux.Normalize();
-            Vector2 res =  aux * amount;
-            if (Velocity.Length()>0)
-            {
-                Velocity -= res;
-                if (Velocity.Length() < amount)
-                    Velocity = Vector2.Zero;
-            }
-        }
 
         public override void Update(GameTime gameTime, List<Sprite> sprites)
         {
             Move();
-            if (isAnimated)
-                SetAnimations();
-            
-
-            if (isAnimated) base.Update(gameTime, sprites);
             SpeedLimit();
             Rezistance(0.04f);
             foreach (Sprite spri in sprites)

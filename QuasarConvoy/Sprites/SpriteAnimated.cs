@@ -38,13 +38,14 @@ namespace QuasarConvoy.Sprites
             }
         }
 
+        /*
         public override Rectangle Collisionbox
         {
             get
             {
                 return new Rectangle((int)Position.X, (int)Position.Y, 64, 64);
             }
-        }
+        }*/
         
         #endregion
         public override void Draw(SpriteBatch spriteBatch)
@@ -67,6 +68,7 @@ namespace QuasarConvoy.Sprites
         }
 
         #region Collisions
+        /*
         protected bool isTouchingLeft(Sprite obj)
         {
             return this.Collisionbox.Left + this.Velocity.X < obj.Collisionbox.Right &&
@@ -98,7 +100,7 @@ namespace QuasarConvoy.Sprites
                 this.Collisionbox.Left < obj.Collisionbox.Right &&
                 this.Collisionbox.Right > obj.Collisionbox.Left;
         }
-
+        */
 
         #endregion
 
