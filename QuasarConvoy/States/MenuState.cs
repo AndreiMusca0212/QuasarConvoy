@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using QuasarConvoy.Controls;
+using QuasarConvoy.Sprites;
 using System.Collections.Generic;
 using System.Text;
 
@@ -13,6 +14,11 @@ namespace QuasarConvoy.States
         private List<Component> components;
         private Texture2D background;
         private Rectangle mainFrame;
+
+        private Texture2D transitionTexture;
+        private bool isTransitioning = false;
+        private bool beginTransitionFade = false;
+        private float transitionAlpha = 0.0f;
 
         public MenuState(Game1 _game, GraphicsDevice _graphicsDevice, ContentManager _contentManager) : base(_game, _graphicsDevice, _contentManager)
         {
@@ -45,6 +51,11 @@ namespace QuasarConvoy.States
 
             background = _contentManager.Load<Texture2D>("UI Stuff/UI Tech Effect");
             mainFrame = new Rectangle(0, 0, _graphicsDevice.Viewport.Width, _graphicsDevice.Viewport.Height);
+
+            //------transition-------
+            transitionTexture = new Texture2D(_graphicsDevice, 1, 1, false, SurfaceFormat.Color);
+            transitionTexture.SetData(new Color[] { Color.Black });
+            
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
@@ -52,8 +63,11 @@ namespace QuasarConvoy.States
             spriteBatch.Begin();
 
             spriteBatch.Draw(background, mainFrame, Color.White);
-            foreach (var component in components)
-                component.Draw(gameTime, spriteBatch);
+            if(isTransitioning)
+                spriteBatch.Draw(transitionTexture, mainFrame, Color.White * transitionAlpha);
+            else
+                foreach (var component in components)
+                    component.Draw(gameTime, spriteBatch);
 
             spriteBatch.End();
         }
@@ -65,12 +79,22 @@ namespace QuasarConvoy.States
 
         public override void Update(GameTime gameTime)
         {
-            foreach (var component in components)
-                component.Update(gameTime);
+            if(beginTransitionFade)
+            {
+                isTransitioning = true;
+                if (transitionAlpha < 1.4f)
+                    transitionAlpha += 0.02f;
+                if(transitionAlpha >= 1.4f)
+                    game.ChangeStates(new GameState(game, graphicsDevice, contentManager));
+            }
+            else
+                foreach (var component in components)
+                    component.Update(gameTime);
         }
         private void NewGameButton_Click(object sender, EventArgs e)
         {
-            game.ChangeStates(new GameState(game, graphicsDevice, contentManager));
+            beginTransitionFade = true;
+            isTransitioning = true;
         }
         private void QuitButton_Click(object sender, EventArgs e)
         {
