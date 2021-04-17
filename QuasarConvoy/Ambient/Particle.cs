@@ -20,8 +20,10 @@ namespace QuasarConvoy.Ambient
 
         public void Update(Camera cam)
         {
-            Position += (-1) * cam.velocity*scale;
-            if (Position.X > Game1.ScreenWidth+10 || Position.X < -10 || Position.Y < -10 || Position.Y > Game1.ScreenHeight+10)
+            int screenWidth = Game1.ScreenWidth;
+            int screenHeight = Game1.ScreenHeight;
+            Position += (-1) * cam.velocity * scale + (new Vector2(Position.X-screenWidth/2,Position.Y-screenHeight/2))*0.2f*cam.zoomVelocity;
+            if (base.Position.X > screenWidth + 10 || base.Position.X < -10 || base.Position.Y < -10 || base.Position.Y > screenHeight + 10)
                 isRemoved = true;
         }
     }

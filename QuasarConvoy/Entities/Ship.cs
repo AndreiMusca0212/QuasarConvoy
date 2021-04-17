@@ -12,11 +12,13 @@ namespace QuasarConvoy.Entities
 {
     class Ship:SpriteMoving
     {
-        bool isAnimated = false;
+        //bool isAnimated = false;
         
         //bool isControlled = false;
         public bool IsControlled { set; get; }
 
+        public int Integrity { set; get; }
+        public int MaxIntegrity { set; get; }
         public Ship(ContentManager content):base(content)
         {
             scale = 0.3f;
@@ -27,7 +29,7 @@ namespace QuasarConvoy.Entities
             Vector2 dist = Distance(mainShip);
             if (dist.Length()>200)
             {
-                MoveTo(mainShip.Position);
+                MoveTo(mainShip.Position,true);
             }
             else
             {
@@ -35,6 +37,7 @@ namespace QuasarConvoy.Entities
                     Rezistance(0.2f);
             }
         }
+        
         
         
         public virtual void Move(Input Input=null, Ship MainShip = null)

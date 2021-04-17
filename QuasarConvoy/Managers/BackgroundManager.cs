@@ -10,21 +10,24 @@ namespace QuasarConvoy.Managers
 {
     class BackgroundManager
     {
-        List<Particle> particles;
-        private float timer;
-        private Particle prefab;
+        public List<Particle> particles;
+        //private float timer;
+        //private Particle prefab;
         private Texture2D texture;
         Random random=new Random();
+        int screenWidth = Game1.ScreenWidth;
+        int screenHeight = Game1.ScreenHeight;
         public BackgroundManager(Texture2D tex)
         {
             texture = tex;
             particles = new List<Particle>();
             for (int i = 0; i < 200; i++)
             {
+                
                 particles.Add(
                     new Particle(texture, random.Next(1, 10) / 100f)
                     {
-                        Position=new Vector2(random.Next(0,Game1.ScreenWidth), random.Next(0, Game1.ScreenHeight))
+                        Position=new Vector2(random.Next(0, screenWidth), random.Next(0, screenHeight))
                     });
             }
 
@@ -40,20 +43,32 @@ namespace QuasarConvoy.Managers
 
         private void GenerateBG(Camera cam)
         {
-            if (particles.Count <= 200)
+            if (particles.Count <= 200 + (cam.Zoom < 1 ? 10 * (1 / cam.Zoom - 1) : -50 * cam.Zoom))
             {
                 if (cam.velocity.X > 0)
-                    particles.Add(GenerateParticle(Game1.ScreenWidth + 5, random.Next(-5, Game1.ScreenHeight + 5)));
+                    particles.Add(GenerateParticle(screenWidth + 5, random.Next(-5, screenHeight + 5)));
                 else
                     if (cam.velocity.X < 0)
-                        particles.Add(GenerateParticle(-5, random.Next(-5, Game1.ScreenHeight + 5)));
+                        particles.Add(GenerateParticle(-5, random.Next(-5, screenHeight + 5)));
 
                 if (cam.velocity.Y > 0)
-                    particles.Add(GenerateParticle(random.Next(-5, Game1.ScreenWidth + 5), Game1.ScreenHeight + 5));
+                    particles.Add(GenerateParticle(random.Next(-5, screenWidth + 5), screenHeight + 5));
                 else
                     if(cam.velocity.Y<0)
-                        particles.Add(GenerateParticle(random.Next(-5, Game1.ScreenWidth + 5), -5));
+                        particles.Add(GenerateParticle(random.Next(-5, screenWidth + 5), -5));
+                
             }
+            if (cam.zoomVelocity < 0f)
+            {
+                while (particles.Count < 200 + (cam.Zoom < 1 ? 10 * (1 / cam.Zoom - 1) : -50 * cam.Zoom))
+                {
+                    particles.Add(GenerateParticle(random.Next(-5, screenWidth + 5), -5));
+                    particles.Add(GenerateParticle(random.Next(-5, screenWidth + 5), screenHeight + 5));
+                    particles.Add(GenerateParticle(-5, random.Next(-5, screenHeight + 5)));
+                    particles.Add(GenerateParticle(screenWidth + 5, random.Next(-5, screenHeight + 5)));
+                }
+            }
+
         }
 
         private void CleanUp()

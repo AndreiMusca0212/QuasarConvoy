@@ -95,22 +95,35 @@ namespace QuasarConvoy.Sprites
                     Velocity = Vector2.Zero;
             }
         }
-        public void MoveTo(Vector2 destination)
+        public void MoveTo(Vector2 destination, bool drift)
         {
             Vector2 dist = new Vector2(this.Position.X - destination.X, this.Position.Y - destination.Y);
             Angle = (float)Math.Atan2(-dist.X, dist.Y);
             //angle = (float)(Math.Acos(Vector2.Dot(dist,new Vector2(10*(float)Math.Cos(Rotation), 10 * (float)Math.Sin(Rotation))) / dist.Length()));
 
-            if (TrueAngle(Rotation, Angle) > 0.2)
+            if (drift)
             {
-                if (TrueAngle(Rotation - AngSpeed, Angle) < TrueAngle(Rotation + AngSpeed, Angle))
-                    Rotation -= AngSpeed;
-                else
-                    Rotation += AngSpeed;
-
+                if (TrueAngle(Rotation, Angle) > 0.2)
+                {
+                    if (TrueAngle(Rotation - AngSpeed, Angle) < TrueAngle(Rotation + AngSpeed, Angle))
+                        Rotation -= AngSpeed;
+                    else
+                        Rotation += AngSpeed;
+                }
+                Forward();
             }
             else
-                Forward();
+            {
+                if (TrueAngle(Rotation, Angle) > 0.2)
+                {
+                    if (TrueAngle(Rotation - AngSpeed, Angle) < TrueAngle(Rotation + AngSpeed, Angle))
+                        Rotation -= AngSpeed;
+                    else
+                        Rotation += AngSpeed;
+                }
+                else
+                    Forward();
+            }
 
         }
         public SpriteMoving(ContentManager content) : base(content)

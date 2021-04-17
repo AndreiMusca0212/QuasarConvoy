@@ -7,25 +7,20 @@ using QuasarConvoy.Sprites;
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 namespace QuasarConvoy.Entities.Ships
 {
-    class Mule1:Ship
+    class Interceptor1:Ship
     {
-        public Mule1(ContentManager content):base(content)
+        public Interceptor1(ContentManager content):base(content)
         {
-            _texture = content.Load<Texture2D>("mule");
-            AngSpeed = 0.05f;
-            SpeedCap = 4f;
-            Speed = 0.1f;
+            _texture = content.Load<Texture2D>("interceptor");
+            AngSpeed = 0.07f;
+            SpeedCap = 6f;
+            Speed = 0.15f;
             Origin = new Vector2(_texture.Width / 2, _texture.Height / 2);
             MaxIntegrity = 200;
             Integrity = MaxIntegrity;
         }
-
-        public override void Update(GameTime gameTime, List<Sprite> sprites)
-        {
-            base.Update(gameTime, sprites);
-        }
-
     }
 }

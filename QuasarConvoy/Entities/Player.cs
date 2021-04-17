@@ -23,25 +23,35 @@ namespace QuasarConvoy.Entities
                 Down = Keys.S,
                 Left = Keys.A,
                 Right = Keys.D,
-
+                NextShip = Keys.T,
+                ZoomIN = Keys.O,
+                ZoomOUT = Keys.P,
             };
         
         int shipIndex=0;
         
         public Ship ControlledShip { set; get; }
+
         #endregion
         
-        public Player(Ship ship)
+        public Player(List<Ship> convoy)
         {
-            ControlledShip = ship;
+            ControlledShip = convoy[shipIndex];
         }
 
         public void SwitchShip(List<Ship> convoy)
         {
-            if (shipIndex > convoy.Count)
-                shipIndex = 0;
-
+            if(Input.WasPressed(Input.NextShip))
+            {
+                if (shipIndex >= convoy.Count-1)
+                    shipIndex = 0;
+                else
+                    shipIndex++;
+                ControlledShip.IsControlled = false;
+                ControlledShip = convoy[shipIndex];
+            }
         }
+
         #region Old player(ship)
         /*
         protected virtual void Move()
@@ -133,12 +143,13 @@ namespace QuasarConvoy.Entities
         }*/
         #endregion
 
-        public void Update(GameTime gametime, List<Sprite> sprites)
+        public void Update(GameTime gametime, List<Sprite> sprites, List<Ship> convoy)
         {
             if (!ControlledShip.IsControlled)
                 ControlledShip.IsControlled = true;
             ControlledShip.Move(Input);
             ControlledShip.Update(gametime, sprites);
+            SwitchShip(convoy);
         }
 
 

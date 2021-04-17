@@ -29,6 +29,8 @@ namespace QuasarConvoy
 
         List<Sprite> _sprites;
 
+        List<Ship> _convoy;
+
         //List<Ship> _convoy;
 
         public static int ScreenWidth=1366;
@@ -44,9 +46,11 @@ namespace QuasarConvoy
 
         protected override void Initialize()
         {
+            ScreenHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+            ScreenWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
             _graphics.PreferredBackBufferWidth = ScreenWidth;
             _graphics.PreferredBackBufferHeight = ScreenHeight;
-            _graphics.IsFullScreen = false;
+            _graphics.IsFullScreen = true;
             _graphics.ApplyChanges();
             
             base.Initialize();
@@ -62,6 +66,11 @@ namespace QuasarConvoy
 
             _sprites = new List<Sprite>
             {
+                
+            };
+
+            _convoy = new List<Ship>
+            {
                 new Mule1(Content),
                 new Mule1(Content)
                 {
@@ -74,12 +83,23 @@ namespace QuasarConvoy
                 new Mule1(Content)
                 {
                     Position=new Vector2(300,100)
+                },
+                new Interceptor1(Content)
+                {
+                    Position=new Vector2(200,200)
                 }
             };
 
+            foreach(var ship in _convoy)
+            {
+                _sprites.Add(ship);
+            }
+
+
+
             ver = 1;
 
-            _player = new Player((Ship)_sprites[0]);
+            _player = new Player(_convoy);
 
             bg = new Background(Content.Load<Texture2D>("spaceBG"));
 
@@ -89,6 +109,8 @@ namespace QuasarConvoy
 
 
         }
+
+        
 
         private void ShipUpdate(Ship sprite,GameTime gameTime)
         {
@@ -107,17 +129,16 @@ namespace QuasarConvoy
             
             foreach (var sprite in _sprites)
             {
-                if (sprite is Ship)
-                {
-                    ShipUpdate((Ship)sprite,gameTime);
-                }
-                else
-                {
+                if(!(sprite is Ship))
                     sprite.Update(gameTime, _sprites);
-                }
             }
-            _player.Update(gameTime, _sprites);
-            _camera.Follow(_player.ControlledShip);
+
+            foreach(var ship in _convoy)
+            {
+                ShipUpdate(ship, gameTime);
+            }
+            _player.Update(gameTime, _sprites,_convoy);
+            _camera.Update(_player.ControlledShip, _player.Input);
 
             
 
@@ -128,9 +149,30 @@ namespace QuasarConvoy
         {
             GraphicsDevice.Clear(Color.Black);
 
+            //Batch 1 Stationary: BG + text
             _spriteBatch.Begin();
                 bg.Draw(_spriteBatch);
                 BackgroundManager.Draw(_spriteBatch);
+            _spriteBatch.DrawString(_font,
+                string.Format("stars:{0} \n MaxStars:{1}",
+                BackgroundManager.particles.Count, 200 + (_camera.Zoom<1?10 * (1/_camera.Zoom-1):-50*_camera.Zoom)),
+                new Vector2(30, 30),
+                Color.Orange,
+                0f,
+                new Vector2(0, 0),
+                1f,
+                SpriteEffects.None,
+                0.6f);
+            _spriteBatch.DrawString(_font,
+                string.Format("posX={0} posY={1}",
+                _player.ControlledShip.Position.X, _player.ControlledShip.Position.Y),
+                new Vector2(30, 80),
+                Color.White,
+                0f,
+                new Vector2(0, 0),
+                1f,
+                SpriteEffects.None,
+                0.6f);
             _spriteBatch.End();
             
             _spriteBatch.Begin(SpriteSortMode.FrontToBack,
@@ -140,17 +182,10 @@ namespace QuasarConvoy
 
             foreach (var sprite in _sprites)
                 sprite.Draw(_spriteBatch);
+            foreach (var ship in _convoy)
+                ship.Draw(_spriteBatch);
+
             
-            _spriteBatch.DrawString(_font,
-                string.Format("posX={0} posY={1}",
-                _sprites[0].Position.X, _sprites[0].Position.Y),
-                new Vector2(_sprites[0].Position.X, _sprites[0].Position.Y + 30),
-                Color.White,
-                0f,
-                new Vector2(0,0),
-                1f,
-                SpriteEffects.None,
-                0.6f);
             
 
             if (ver == 0)
