@@ -22,5 +22,10 @@ namespace QuasarConvoy.Entities.Ships
             MaxIntegrity = 200;
             Integrity = MaxIntegrity;
         }
+
+        public override void Shoot()
+        {
+            base.Shoot();
+        }
     }
 }

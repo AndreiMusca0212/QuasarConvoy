@@ -21,11 +21,17 @@ namespace QuasarConvoy
         SpriteFont _font;
         private Camera _camera;
 
+        public Camera Camera{
+            get{return _camera;}
+            }
+
         Player _player;
 
         Background bg;
 
         BackgroundManager BackgroundManager;
+
+        public CombatManager _combatManager;
 
         List<Sprite> _sprites;
 
@@ -62,11 +68,18 @@ namespace QuasarConvoy
 
             _camera = new Camera();
 
-            
+
+            bg = new Background(Content.Load<Texture2D>("spaceBG"));
+
+            BackgroundManager = new BackgroundManager(Content.Load<Texture2D>("starparticle"));
+
+            _font = Content.Load<SpriteFont>("Font");
+
+            _combatManager = new CombatManager(Content);
 
             _sprites = new List<Sprite>
             {
-                
+                new Projectile(Content,0f,0f),
             };
 
             _convoy = new List<Ship>
@@ -86,7 +99,8 @@ namespace QuasarConvoy
                 },
                 new Interceptor1(Content)
                 {
-                    Position=new Vector2(200,200)
+                    Position=new Vector2(200,200),
+                    CombatManager=_combatManager
                 }
             };
 
@@ -101,11 +115,7 @@ namespace QuasarConvoy
 
             _player = new Player(_convoy);
 
-            bg = new Background(Content.Load<Texture2D>("spaceBG"));
-
-            BackgroundManager = new BackgroundManager(Content.Load<Texture2D>("starparticle"));
-
-            _font = Content.Load<SpriteFont>("Font");
+            
 
 
         }
@@ -139,6 +149,8 @@ namespace QuasarConvoy
             }
             _player.Update(gameTime, _sprites,_convoy);
             _camera.Update(_player.ControlledShip, _player.Input);
+
+            _combatManager.Update(gameTime, _camera);
 
             
 
@@ -184,7 +196,7 @@ namespace QuasarConvoy
                 sprite.Draw(_spriteBatch);
             foreach (var ship in _convoy)
                 ship.Draw(_spriteBatch);
-
+            _combatManager.Draw(_spriteBatch);
             
             
 

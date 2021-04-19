@@ -24,6 +24,7 @@ namespace QuasarConvoy.Entities
                 Left = Keys.A,
                 Right = Keys.D,
                 NextShip = Keys.T,
+                Shoot = Keys.Space,
                 ZoomIN = Keys.O,
                 ZoomOUT = Keys.P,
             };
@@ -147,7 +148,7 @@ namespace QuasarConvoy.Entities
         {
             if (!ControlledShip.IsControlled)
                 ControlledShip.IsControlled = true;
-            ControlledShip.Move(Input);
+            ControlledShip.MoveControlled(Input);
             ControlledShip.Update(gametime, sprites);
             SwitchShip(convoy);
         }

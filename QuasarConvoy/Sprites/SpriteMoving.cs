@@ -38,9 +38,9 @@ namespace QuasarConvoy.Sprites
             get { return rott; }
         }
 
-        public Vector2 Distance(SpriteMoving dest)
+        public Vector2 Distance(Vector2 dest)
         {
-            return new Vector2(this.Position.X - dest.Position.X, this.Position.Y - dest.Position.Y);
+            return new Vector2(this.Position.X - dest.X, this.Position.Y - dest.Y);
         }
 
         public float TrueAngle(float a1, float a2)

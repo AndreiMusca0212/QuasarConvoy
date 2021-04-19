@@ -12,17 +12,38 @@ namespace QuasarConvoy.Entities
 {
     class Projectile:SpriteMoving
     {
-        public Projectile(ContentManager content):base(content)
+        public bool isRemoved;
+        public bool friendly;
+        private float speedInd;
+        public Projectile(ContentManager content,float velocity,float rott):base(content)
         {
             Layer = 0.2f;
             _texture = content.Load<Texture2D>("Pew");
-
+            scale = 1f;
+            speedInd = velocity;
+            Rotation = rott - (float)Math.PI/2f;
+            Velocity = speedInd * new Vector2((float)Math.Cos(Rotation), (float)Math.Sin(Rotation));
         }
 
-        public void Update(GameTime gametime)
+        private void CheckGone(Camera cam)
         {
+            if(Distance(cam.cameraPos).Length() > 11000)
+            {
+                isRemoved = true;
+            }
+        }
+
+        private void Move()
+        {
+            
+            
+        }
+        public void Update(GameTime gametime,Camera cam)
+        {
+            CheckGone(cam);
             Position += Velocity;
         }
+
 
     }
 }

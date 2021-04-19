@@ -12,7 +12,7 @@ using QuasarConvoy.Models;
 
 namespace QuasarConvoy.Sprites
 {
-    class Sprite:Component
+    public class Sprite:Component
     {
         #region Fields
 

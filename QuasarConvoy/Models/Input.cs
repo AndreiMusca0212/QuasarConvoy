@@ -5,7 +5,7 @@ using System.Text;
 
 namespace QuasarConvoy.Models
 {
-    class Input
+    public class Input
     {
         static KeyboardState currentState;
         static KeyboardState prevState;
@@ -13,10 +13,12 @@ namespace QuasarConvoy.Models
         public Keys Down { set; get; }
         public Keys Left { set; get; }
         public Keys Right { set; get; }
+        public Keys Shoot { set; get; }
         public Keys Reset { set; get; }
         public Keys NextShip { set; get; }
         public Keys ZoomIN { set; get; }
         public Keys ZoomOUT { set; get; } 
+
 
         public static bool IsPressed(Keys key)
         {

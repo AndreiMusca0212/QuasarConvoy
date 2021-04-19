@@ -7,7 +7,7 @@ using QuasarConvoy.Models;
 
 namespace QuasarConvoy.Core
 {
-    class Camera
+    public class Camera
     {
         public Matrix Transform { private set; get; }
         public Sprite FollowedSprite { get; set; }

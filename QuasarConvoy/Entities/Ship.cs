@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using QuasarConvoy.Models;
 using QuasarConvoy.Sprites;
+using QuasarConvoy.Managers;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -19,6 +20,8 @@ namespace QuasarConvoy.Entities
 
         public int Integrity { set; get; }
         public int MaxIntegrity { set; get; }
+
+        public CombatManager CombatManager = null;
         public Ship(ContentManager content):base(content)
         {
             scale = 0.3f;
@@ -26,7 +29,7 @@ namespace QuasarConvoy.Entities
 
         public void Follow(Ship mainShip)
         {
-            Vector2 dist = Distance(mainShip);
+            Vector2 dist = Distance(mainShip.Position);
             if (dist.Length()>200)
             {
                 MoveTo(mainShip.Position,true);
@@ -40,7 +43,7 @@ namespace QuasarConvoy.Entities
         
         
         
-        public virtual void Move(Input Input=null, Ship MainShip = null)
+        public virtual void MoveControlled(Input Input=null, Ship MainShip = null)
         {
             if (Input != null)
             {
@@ -72,14 +75,25 @@ namespace QuasarConvoy.Entities
                     Velocity = Vector2.Zero;
                     Rotation = (float)Math.PI / 2;
                 }
+                if (Keyboard.GetState().IsKeyDown(Input.Shoot))
+                {
+                    Shoot();
+                }
             }
             
         }
 
+        public virtual void Shoot()
+        {
+            if(CombatManager!=null)
+            {
+                CombatManager.AddProjectile(Position, 6f, Rotation, false);
+            }
+        }
         
         protected void KeepAway(Ship sprit,float minDist)
         {
-            Vector2 dist = Distance(sprit);
+            Vector2 dist = Distance(sprit.Position);
             Vector2 aux = dist;
             /*float angelDist = (float)Math.Atan2(-dist.X, dist.Y);
             float angleVel= (float)Math.Atan2(-Velocity.X, Velocity.Y);*/
@@ -94,7 +108,7 @@ namespace QuasarConvoy.Entities
 
         public override void Update(GameTime gameTime, List<Sprite> sprites)
         {
-            Move();
+            MoveControlled();
             SpeedLimit();
             Rezistance(0.04f);
             foreach (Sprite spri in sprites)
