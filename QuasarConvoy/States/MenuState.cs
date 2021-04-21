@@ -22,25 +22,23 @@ namespace QuasarConvoy.States
 
         public MenuState(Game1 _game, GraphicsDevice _graphicsDevice, ContentManager _contentManager) : base(_game, _graphicsDevice, _contentManager)
         {
+            float width = _graphicsDevice.PresentationParameters.BackBufferWidth;
+            float height = _graphicsDevice.PresentationParameters.BackBufferHeight;
+
             var playButtonTexture = _contentManager.Load<Texture2D>("UI Stuff/Play Button");
             var quitButtonTexture = _contentManager.Load<Texture2D>("UI Stuff/Quit Button");
 
             var newGameButton = new Button(playButtonTexture, _contentManager)
             {
-                Position = new Vector2(_graphicsDevice.PresentationParameters.BackBufferWidth / 2 - 
-                            playButtonTexture.Width / 2, _graphicsDevice.PresentationParameters.BackBufferHeight / 2 -
+                Position = new Vector2(width / 2 - playButtonTexture.Width / 2, height / 2 -
                             (playButtonTexture.Height * 4) / 5),         
             };
-
             newGameButton.Click += NewGameButton_Click;
 
             var quitButton = new Button(quitButtonTexture, _contentManager)
             {
-                Position = new Vector2(_graphicsDevice.PresentationParameters.BackBufferWidth / 2 -
-                            quitButtonTexture.Width / 2, _graphicsDevice.PresentationParameters.BackBufferHeight / 2 +
-                            quitButtonTexture.Height / 4),
+                Position = new Vector2(width / 2 - quitButtonTexture.Width / 2, height / 2 + quitButtonTexture.Height / 4),
             };
-
             quitButton.Click += QuitButton_Click;
 
             components = new List<Component>()
@@ -52,7 +50,6 @@ namespace QuasarConvoy.States
             background = _contentManager.Load<Texture2D>("UI Stuff/UI Tech Effect");
             mainFrame = new Rectangle(0, 0, _graphicsDevice.Viewport.Width, _graphicsDevice.Viewport.Height);
 
-            //------transition-------
             transitionTexture = new Texture2D(_graphicsDevice, 1, 1, false, SurfaceFormat.Color);
             transitionTexture.SetData(new Color[] { Color.Black });
             

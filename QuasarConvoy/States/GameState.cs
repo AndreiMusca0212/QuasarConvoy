@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using QuasarConvoy.Controls;
 using System;
 using System.Collections.Generic;
@@ -10,79 +11,41 @@ namespace QuasarConvoy.States
 {
     public class GameState : State
     {
-        private List<Component> components;
-        private Texture2D HUD;
-        private Rectangle mainFrame;
+        DBManager dBManager;
+        private string query;
+
+        private SpriteFont font;
+
+        struct element
+        {
+            public int x;
+            public int y;
+            public string value;
+        }
+        element currencyDisplay;
 
         public GameState(Game1 _game, GraphicsDevice _graphicsDevice, ContentManager _contentManager) : base(_game, _graphicsDevice, _contentManager)
         {
-            HUD = _contentManager.Load<Texture2D>("UI Stuff/HUD");
-            mainFrame = new Rectangle(0, 0, _graphicsDevice.Viewport.Width, _graphicsDevice.Viewport.Height);
+            float width = _graphicsDevice.PresentationParameters.BackBufferWidth;
+            float height = _graphicsDevice.PresentationParameters.BackBufferHeight;
 
-            var minimapIconTexture = _contentManager.Load<Texture2D>("UI Stuff/Icons/Minimap Icon");
-            var bigMapIconTexture = _contentManager.Load<Texture2D>("UI Stuff/Icons/BigMap Icon");
-            var wayPointIconTexture = _contentManager.Load<Texture2D>("UI Stuff/Icons/Waypoint Icon");
-            var inventoryIconTexture = _contentManager.Load<Texture2D>("UI Stuff/Icons/Inventory Icon");
-            var convoyTexture = _contentManager.Load<Texture2D>("UI Stuff/Icons/Convoy Icon");
-            var settingsTexture = _contentManager.Load<Texture2D>("UI Stuff/Icons/Setting Icon");
+            dBManager = new DBManager();
+            query = "SELECT Currency FROM UserInfo WHERE ID = 1";
+            int result = int.Parse(dBManager.SelectElement(query));
+            
+            font = _contentManager.Load<SpriteFont>("Fonts/Font");
 
-            var minimapButton = new Button(minimapIconTexture, _contentManager)
-            {
-                Position = new Vector2(10, _graphicsDevice.PresentationParameters.BackBufferHeight / 8 - 50),
-            };
-            minimapButton.Click += MinimapButton_Click;
-
-            var bigMapButton = new Button(bigMapIconTexture, _contentManager)
-            {
-                Position = new Vector2(10, _graphicsDevice.PresentationParameters.BackBufferHeight / 8),
-            };
-            bigMapButton.Click += BigMapButton_Click;
-
-            var wayPointButton = new Button(wayPointIconTexture, _contentManager)
-            {
-                Position = new Vector2(10, _graphicsDevice.PresentationParameters.BackBufferHeight / 8 + 50),
-            };
-            wayPointButton.Click += WayPointButton_Click;
-
-            var inventoryButton = new Button(inventoryIconTexture, _contentManager)
-            {
-                Position = new Vector2(_graphicsDevice.PresentationParameters.BackBufferWidth - 70,
-                                    _graphicsDevice.PresentationParameters.BackBufferHeight / 8 - 50),
-            };
-            inventoryButton.Click += InventoryButton_Click;
-
-            var convoyButton = new Button(convoyTexture, _contentManager)
-            {
-                Position = new Vector2(_graphicsDevice.PresentationParameters.BackBufferWidth - 60,
-                                    _graphicsDevice.PresentationParameters.BackBufferHeight / 8 + 20),
-            };
-            convoyButton.Click += ConvoyButton_Click;
-
-            var settingsButton = new Button(settingsTexture, _contentManager)
-            {
-                Position = new Vector2(_graphicsDevice.PresentationParameters.BackBufferWidth - 70,
-                                    _graphicsDevice.PresentationParameters.BackBufferHeight / 8 + 90),
-            };
-            settingsButton.Click += SettingsButton_Click;
-
-            components = new List<Component>()
-            {
-                minimapButton,
-                bigMapButton,
-                wayPointButton,
-                inventoryButton,
-                convoyButton,
-                settingsButton,
-            };
+            currencyDisplay = new element();
+            currencyDisplay.x = (int)(3 * width) / 4;
+            currencyDisplay.y = (int)(height / 16);
+            currencyDisplay.value = result + " CC";
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             spriteBatch.Begin();
 
-            spriteBatch.Draw(HUD, mainFrame, Color.White);
-            foreach (var component in components)
-                component.Draw(gameTime, spriteBatch);
+            spriteBatch.DrawString(font, currencyDisplay.value, new Vector2(currencyDisplay.x, currencyDisplay.y), Color.White);
 
             spriteBatch.End();
         }
@@ -94,34 +57,25 @@ namespace QuasarConvoy.States
 
         public override void Update(GameTime gameTime)
         {
-            foreach (var component in components)
-                component.Update(gameTime);
-        }
+            KeyboardState keyboard = Keyboard.GetState();
 
-        //----------------------------------------------------
-        private void MinimapButton_Click(object sender, EventArgs e)
-        {
+            currentInventoryState = currentEscState = keyboard;
 
-        }
-        private void BigMapButton_Click(object sender, EventArgs e)
-        {
+            bool invActivated = (currentInventoryState.IsKeyUp(Keys.I) && previousInventoryState.IsKeyDown(Keys.I));
+            bool escActivated = (currentEscState.IsKeyUp(Keys.Escape) && previousEscState.IsKeyDown(Keys.Escape));
 
-        }
-        private void WayPointButton_Click(object sender, EventArgs e)
-        {
+            if (escActivated)
+                game.ChangeStates(new EscState(game, graphicsDevice, contentManager));
+            previousEscState = currentEscState;
 
-        }
-        private void SettingsButton_Click(object sender, EventArgs e)
-        {
-            game.ChangeStates(new SettingsState(game, graphicsDevice, contentManager));
-        }
-        private void ConvoyButton_Click(object sender, EventArgs e)
-        {
-            game.ChangeStates(new ConvoyManagementState(game, graphicsDevice, contentManager));
-        }
-        private void InventoryButton_Click(object sender, EventArgs e)
-        {
-            game.ChangeStates(new InventoryState(game, graphicsDevice, contentManager));
+            if (invActivated)
+                game.ChangeStates(new InventoryState(game, graphicsDevice, contentManager));
+            previousInventoryState = currentInventoryState;
+            
+
+            query = "SELECT Currency FROM UserInfo WHERE ID = 1";
+            int result = int.Parse(dBManager.SelectElement(query));
+            currencyDisplay.value = result + " CC";
         }
     }
 }

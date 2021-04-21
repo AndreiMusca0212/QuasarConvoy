@@ -7,9 +7,9 @@ using System.Text;
 
 namespace QuasarConvoy.States
 {
-    public class ConvoyManagementState : State
+    public class TutorialState : State
     {
-        public ConvoyManagementState(Game1 _game, GraphicsDevice _graphicsDevice, ContentManager _contentManager) : base(_game, _graphicsDevice, _contentManager)
+        public TutorialState(Game1 _game, GraphicsDevice _graphicsDevice, ContentManager _contentManager) : base(_game, _graphicsDevice, _contentManager)
         {
         }
 

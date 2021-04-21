@@ -8,6 +8,7 @@ using QuasarConvoy.Models;
 using QuasarConvoy.Entities;
 using QuasarConvoy.Controls;
 using QuasarConvoy.States;
+using System;
 
 namespace QuasarConvoy
 {
@@ -18,6 +19,8 @@ namespace QuasarConvoy
 
         private State currentState;
         private State nextState;
+
+        private Color background = Color.Black;
 
         public void ChangeStates(State state)
         {
@@ -66,7 +69,7 @@ namespace QuasarConvoy
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Black);
+            GraphicsDevice.Clear(background);
 
             currentState.Draw(gameTime, _spriteBatch);
 

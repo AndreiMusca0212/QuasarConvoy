@@ -13,20 +13,25 @@ namespace QuasarConvoy.Controls
     public class Button : Component
     {
         #region Fields
+        private DBManager dBManager;
 
         private MouseState currentMouse;
+
+        private MouseState previousMouse;
 
         private SpriteFont font;
 
         private bool isHovering;
 
-        private MouseState previousMouse;
-
         private Texture2D texture;
 
         private SoundEffect soundEffect;
 
-        private int state;
+        private float scale;
+
+        private int state, SoundLevel;
+        
+        private string query = "SELECT SoundLevel FROM UserInfo WHERE ID = 1";
 
         #endregion
 
@@ -44,7 +49,7 @@ namespace QuasarConvoy.Controls
         {
             get
             {
-                return new Rectangle((int)Position.X, (int)Position.Y, texture.Width, texture.Height);
+                return new Rectangle((int)Position.X, (int)Position.Y, (int)(texture.Width * scale), (int)(texture.Height * scale));
             }
         }
 
@@ -54,11 +59,17 @@ namespace QuasarConvoy.Controls
 
         #region Methods
 
-        public Button(Texture2D _texture, SpriteFont _font, ContentManager _content)
+        public Button(Texture2D _texture, SpriteFont _font, ContentManager _content, float _scale)
         {
+            dBManager = new DBManager();
+            SoundLevel = int.Parse(dBManager.SelectElement(query));
+
+            //Button Specifics
             texture = _texture;
 
             font = _font;
+
+            scale = _scale;
 
             PenColor = Color.Black;
 
@@ -68,7 +79,13 @@ namespace QuasarConvoy.Controls
         }
         public Button(Texture2D _texture, ContentManager _content)
         {
+            dBManager = new DBManager();
+            SoundLevel = int.Parse(dBManager.SelectElement(query));
+
+            //Button Specifics
             texture = _texture;
+
+            scale = 1;
 
             soundEffect = _content.Load<SoundEffect>("Sounds/ButtonTickSound_Zapsplat");
 
@@ -76,12 +93,15 @@ namespace QuasarConvoy.Controls
         }
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            var color = Color.White;
+            Color color = Color.White;
 
             if (isHovering)
                 color = Color.Gray;
-            
-            spriteBatch.Draw(texture, Rectangle, color);
+
+            if (scale == 1)
+                spriteBatch.Draw(texture, Rectangle, color);
+            else
+                spriteBatch.Draw(texture, Position, null, color, 0, new Vector2(0, 0), scale, SpriteEffects.None, 0);
 
             if (!string.IsNullOrEmpty(Text))
             {
@@ -94,12 +114,15 @@ namespace QuasarConvoy.Controls
 
         public override void Update(GameTime gameTime)
         {
+            SoundLevel = int.Parse(dBManager.SelectElement(query));
+
             previousMouse = currentMouse;
             currentMouse = Mouse.GetState();
 
             var mouseRectangle = new Rectangle(currentMouse.X, currentMouse.Y, 1, 1);
 
             var instance = soundEffect.CreateInstance();
+            instance.Volume = instance.Volume * SoundLevel / 100;
             instance.IsLooped = false;
             if (state == 0)
             {
