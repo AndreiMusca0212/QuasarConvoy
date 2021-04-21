@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
 
 namespace QuasarConvoy.States
@@ -16,6 +17,9 @@ namespace QuasarConvoy.States
         protected GraphicsDevice graphicsDevice;
 
         protected Game1 game;
+
+        protected KeyboardState previousInventoryState, currentInventoryState;
+        protected KeyboardState previousEscState, currentEscState;
 
         #endregion
 

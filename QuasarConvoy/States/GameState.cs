@@ -10,10 +10,29 @@ using QuasarConvoy.Entities;
 using QuasarConvoy.Core;
 using QuasarConvoy.Ambient;
 using QuasarConvoy.Entities.Ships;
+using QuasarConvoy.Controls;
+using System;
+using System.Text;
+
 namespace QuasarConvoy.States
 {
     public class GameState : State
     {
+
+        DBManager dBManager;
+        private string query;
+
+        private SpriteFont font;
+
+        struct element
+        {
+            public int x;
+            public int y;
+            public string value;
+        }
+        element currencyDisplay;
+        
+        
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private int ver = 0;
@@ -42,17 +61,31 @@ namespace QuasarConvoy.States
 
         public GameState(Game1 _game, GraphicsDevice _graphicsDevice, ContentManager _contentManager):base(_game,_graphicsDevice,_contentManager)
         {
+            float width = _graphicsDevice.PresentationParameters.BackBufferWidth;
+            float height = _graphicsDevice.PresentationParameters.BackBufferHeight;
+
+            dBManager = new DBManager();
+            query = "SELECT Currency FROM UserInfo WHERE ID = 1";
+            int result = int.Parse(dBManager.SelectElement(query));
+            
+            font = _contentManager.Load<SpriteFont>("Fonts/Font");
+
+            currencyDisplay = new element();
+            currencyDisplay.x = (int)(3 * width) / 4;
+            currencyDisplay.y = (int)(height / 16);
+            currencyDisplay.value = result + " CC";
             _graphics = new GraphicsDeviceManager(this);
 
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+            LoadContent(_graphicsDevice,_contentManager);
         }
 
         
 
-        protected override void LoadContent()
+        protected override void LoadContent(GraphicsDevice graphicsDevice, ContentManager Content)
         {
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
+            _spriteBatch = new SpriteBatch(graphicsDevice);
 
             _camera = new Camera();
 
@@ -116,8 +149,30 @@ namespace QuasarConvoy.States
                 sprite.Follow(_player.ControlledShip);
             }
         }
+        
         protected override void Update(GameTime gameTime)
         {
+            KeyboardState keyboard = Keyboard.GetState();
+
+            currentInventoryState = currentEscState = keyboard;
+
+            bool invActivated = (currentInventoryState.IsKeyUp(Keys.I) && previousInventoryState.IsKeyDown(Keys.I));
+            bool escActivated = (currentEscState.IsKeyUp(Keys.Escape) && previousEscState.IsKeyDown(Keys.Escape));
+
+            if (escActivated)
+                game.ChangeStates(new EscState(game, graphicsDevice, contentManager));
+            previousEscState = currentEscState;
+
+            if (invActivated)
+                game.ChangeStates(new InventoryState(game, graphicsDevice, contentManager));
+            previousInventoryState = currentInventoryState;
+            
+
+            query = "SELECT Currency FROM UserInfo WHERE ID = 1";
+            int result = int.Parse(dBManager.SelectElement(query));
+            currencyDisplay.value = result + " CC";
+            //cleo upp
+            
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
@@ -145,6 +200,7 @@ namespace QuasarConvoy.States
 
         protected override void Draw(GameTime gameTime)
         {
+            
             GraphicsDevice.Clear(Color.Black);
 
             //Batch 1 Stationary: BG + text
@@ -190,9 +246,32 @@ namespace QuasarConvoy.States
                 throw new System.Exception("Not loaded");
 
             _spriteBatch.End();
+            spriteBatch.Begin();
+
+            spriteBatch.DrawString(font, currencyDisplay.value, new Vector2(currencyDisplay.x, currencyDisplay.y), Color.White);
+
+            spriteBatch.End();
 
 
             base.Draw(gameTime);
+        }
+        
+        
+
+        /*public GameState(Game1 _game, GraphicsDevice _graphicsDevice, ContentManager _contentManager) : base(_game, _graphicsDevice, _contentManager)
+        {
+            
+        }*/
+        
+        /*
+        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+        {
+            
+        }*/
+
+        public override void PostUpdate(GameTime gameTime)
+        {
+            
         }
     }
 }
