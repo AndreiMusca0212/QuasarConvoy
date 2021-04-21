@@ -104,6 +104,18 @@
 /processorParam:TextureFormat=Color
 /build:mule.png
 
+#begin nebula.jpg
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:nebula.jpg
+
 #begin Sounds/ButtonTickSound_Zapsplat.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -218,6 +230,20 @@
 /processorParam:TextureFormat=Color
 /build:UI Stuff/Images/TechEffect.png
 
+
+#begin Pew.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Pew.png
+
+
 #begin UI Stuff/Inventory Box.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -229,6 +255,19 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:UI Stuff/Inventory Box.png
+
+
+#begin spaceBG.jpg
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:spaceBG.jpg
 
 #begin UI Stuff/Play Button.png
 /importer:TextureImporter
@@ -242,6 +281,18 @@
 /processorParam:TextureFormat=Color
 /build:UI Stuff/Play Button.png
 
+#begin starparticle.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:starparticle.png
+
 #begin UI Stuff/Quit Button.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -253,6 +304,19 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:UI Stuff/Quit Button.png
+
+
+#begin StarParticleBG.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:StarParticleBG.png
 
 #begin UI Stuff/UI Tech Effect.png
 /importer:TextureImporter

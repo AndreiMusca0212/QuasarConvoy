@@ -6,9 +6,13 @@ using System.Collections.Generic;
 using QuasarConvoy.Managers;
 using QuasarConvoy.Models;
 using QuasarConvoy.Entities;
+using QuasarConvoy.Core;
+using QuasarConvoy.Ambient;
+using QuasarConvoy.Entities.Ships;
 using QuasarConvoy.Controls;
 using QuasarConvoy.States;
 using System;
+
 
 namespace QuasarConvoy
 {
@@ -30,29 +34,39 @@ namespace QuasarConvoy
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
+            
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
 
         protected override void Initialize()
         {
+            ScreenHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+            ScreenWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+            
             IsMouseVisible = true;
 
             _graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
             _graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
             _graphics.IsFullScreen = true;
             _graphics.ApplyChanges();
-
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-
             currentState = new MenuState(this, _graphics.GraphicsDevice, Content);
         }
 
+        private void ShipUpdate(Ship sprite,GameTime gameTime)
+        {
+            if (!sprite.IsControlled)
+            {
+                sprite.Update(gameTime, _sprites);
+                sprite.Follow(_player.ControlledShip);
+            }
+        }
         protected override void Update(GameTime gameTime)
         {
             if(nextState != null)
@@ -60,7 +74,6 @@ namespace QuasarConvoy
                 currentState = nextState;
                 nextState = null;
             }
-
             currentState.Update(gameTime);
             currentState.PostUpdate(gameTime);
 

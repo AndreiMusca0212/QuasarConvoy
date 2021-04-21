@@ -13,7 +13,7 @@ using QuasarConvoy.Sprites;
 
 namespace QuasarConvoy.Entities
 {
-    class Player:SpriteAnimated
+    class Player
     {
         #region Sprite Properties&Fields
         public Input Input =
@@ -23,31 +23,38 @@ namespace QuasarConvoy.Entities
                 Down = Keys.S,
                 Left = Keys.A,
                 Right = Keys.D,
-
+                NextShip = Keys.T,
+                Shoot = Keys.Space,
+                ZoomIN = Keys.O,
+                ZoomOUT = Keys.P,
             };
-        bool isAnimated = false;
-        float angSpeed = 0.1f;
+        
+        int shipIndex=0;
+        
+        public Ship ControlledShip { set; get; }
 
         #endregion
         
-        public Player(ContentManager Content,bool animated):base(Content)
+        public Player(List<Ship> convoy)
         {
-            if (animated)
-                isAnimated = true;
-            else
-                _texture = Content.Load<Texture2D>("mule");
-            scale = 0.3f;
-            Origin = new Vector2(_texture.Width / 2, _texture.Height / 2);
-            Speed = 0.5f;
-            /*_animations = new Dictionary<string, Animation>()
-            {
-            };
-            _animationManager = new AnimationManager(_animations.First().Value);
-            scale = 4;*/
-
+            ControlledShip = convoy[shipIndex];
         }
-        
 
+        public void SwitchShip(List<Ship> convoy)
+        {
+            if(Input.WasPressed(Input.NextShip))
+            {
+                if (shipIndex >= convoy.Count-1)
+                    shipIndex = 0;
+                else
+                    shipIndex++;
+                ControlledShip.IsControlled = false;
+                ControlledShip = convoy[shipIndex];
+            }
+        }
+
+        #region Old player(ship)
+        /*
         protected virtual void Move()
         {
             if (Keyboard.GetState().IsKeyDown(Input.Up))
@@ -72,6 +79,13 @@ namespace QuasarConvoy.Entities
             {
                 Position = new Vector2(150, 150);
                 Velocity = Vector2.Zero;
+                Rotation = 0f;
+            }
+            if(Keyboard.GetState().IsKeyDown(Input.Reset)&& Keyboard.GetState().IsKeyDown(Input.Right))
+            {
+                Position = new Vector2(150, 150);
+                Velocity = Vector2.Zero;
+                Rotation = (float)Math.PI/2;
             }
         }
 
@@ -86,7 +100,7 @@ namespace QuasarConvoy.Entities
                     Origin,
                     (float)scale,
                     SpriteEffects.None,
-                    0f
+                    0.2f
                     );
         }
         protected void Collide(Sprite sprit)
@@ -105,19 +119,40 @@ namespace QuasarConvoy.Entities
             else
                 _animationManager.Play(_animations["W_Front"]);
         }
-
+        private void SpeedLimit()
+        {
+            if (Velocity.Length() > speedCap)
+            {
+                Velocity.Normalize();
+                Velocity*= speedCap;
+            }
+            
+        }
         public override void Update(GameTime gameTime, List<Sprite> sprites)
         {
             Move();
-            if(isAnimated)
+            if (isAnimated)
                 SetAnimations();
             foreach (Sprite spri in sprites)
                 Collide(spri);
 
-            if(isAnimated)base.Update(gameTime, sprites);
+            if (isAnimated) base.Update(gameTime, sprites);
+            SpeedLimit();
             Position += Velocity;
-            
+
             //Velocity = Vector2.Zero;
+        }*/
+        #endregion
+
+        public void Update(GameTime gametime, List<Sprite> sprites, List<Ship> convoy)
+        {
+            if (!ControlledShip.IsControlled)
+                ControlledShip.IsControlled = true;
+            ControlledShip.MoveControlled(Input);
+            ControlledShip.Update(gametime, sprites);
+            SwitchShip(convoy);
         }
+
+
     }
 }
