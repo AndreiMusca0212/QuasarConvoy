@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using QuasarConvoy.Managers;
 using QuasarConvoy.Models;
 using QuasarConvoy.Entities;
+using QuasarConvoy.Controls;
+using QuasarConvoy.States;
+using System;
 
 namespace QuasarConvoy
 {
@@ -13,10 +16,16 @@ namespace QuasarConvoy
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-        private int ver = 0;
 
-        List<Sprite> _sprites;
+        private State currentState;
+        private State nextState;
 
+        private Color background = Color.Black;
+
+        public void ChangeStates(State state)
+        {
+            nextState = state;
+        }
 
         public Game1()
         {
@@ -27,7 +36,12 @@ namespace QuasarConvoy
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            IsMouseVisible = true;
+
+            _graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+            _graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+            _graphics.IsFullScreen = true;
+            _graphics.ApplyChanges();
 
             base.Initialize();
         }
@@ -36,52 +50,28 @@ namespace QuasarConvoy
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            _sprites = new List<Sprite>
-            {
-                new Player(Content,false)
-                {
-                    Position=new Vector2(100,100),
-                    Input=new Input()
-                    {
-                        Up=Keys.W,
-                        Down = Keys.S,
-                        Left=Keys.A,
-                        Right=Keys.D,
-                        Reset=Keys.R
-                    }
-                }
-            };
-            ver = 1;
+            currentState = new MenuState(this, _graphics.GraphicsDevice, Content);
         }
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+            if(nextState != null)
+            {
+                currentState = nextState;
+                nextState = null;
+            }
 
-            foreach (var sprite in _sprites)
-                sprite.Update(gameTime,_sprites);
+            currentState.Update(gameTime);
+            currentState.PostUpdate(gameTime);
 
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Black);
+            GraphicsDevice.Clear(background);
 
-            _spriteBatch.Begin(SpriteSortMode.Deferred,
-              BlendState.AlphaBlend,
-              SamplerState.PointClamp,
-              null, null, null, null);
-
-            foreach (var sprite in _sprites)
-                sprite.Draw(_spriteBatch);
-
-            if (ver == 0)
-               throw new System.Exception("Not loaded");
-
-            _spriteBatch.End();
-
+            currentState.Draw(gameTime, _spriteBatch);
 
             base.Draw(gameTime);
         }
