@@ -21,11 +21,19 @@ namespace QuasarConvoy.Entities.Ships
             Origin = new Vector2(_texture.Width / 2, _texture.Height / 2);
             MaxIntegrity = 200;
             Integrity = MaxIntegrity;
+            ShootInterval = 0.2f;
         }
 
         public override void Shoot()
         {
-            base.Shoot();
+            if (shootTimer >= ShootInterval)
+            {
+                if (CombatManager != null)
+                {
+                    CombatManager.AddProjectile(Position, 20f, Rotation, false);
+                }
+                shootTimer = 0f;
+            }
         }
     }
 }

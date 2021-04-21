@@ -14,10 +14,12 @@ namespace QuasarConvoy.Entities
     class Ship:SpriteMoving
     {
         //bool isAnimated = false;
-        
-        //bool isControlled = false;
-        public bool IsControlled { set; get; }
 
+        //bool isControlled = false;
+        protected float shootTimer;
+
+        protected float ShootInterval { set; get; }
+        public bool IsControlled { set; get; }
         public int Integrity { set; get; }
         public int MaxIntegrity { set; get; }
 
@@ -85,9 +87,13 @@ namespace QuasarConvoy.Entities
 
         public virtual void Shoot()
         {
-            if(CombatManager!=null)
+            if (shootTimer >= ShootInterval)
             {
-                CombatManager.AddProjectile(Position, 6f, Rotation, false);
+                if (CombatManager != null)
+                {
+                    CombatManager.AddProjectile(Position, 6f, Rotation, false);
+                }
+                shootTimer = 0f;
             }
         }
         
@@ -111,6 +117,7 @@ namespace QuasarConvoy.Entities
             MoveControlled();
             SpeedLimit();
             Rezistance(0.04f);
+            shootTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
             foreach (Sprite spri in sprites)
                 if (spri is Ship && spri != this)
                     KeepAway((Ship)spri,_texture.Width*scale);

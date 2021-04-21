@@ -19,7 +19,7 @@ namespace QuasarConvoy.Entities
         {
             Layer = 0.2f;
             _texture = content.Load<Texture2D>("Pew");
-            scale = 1f;
+            scale = 0.4f;
             speedInd = velocity;
             Rotation = rott - (float)Math.PI/2f;
             Velocity = speedInd * new Vector2((float)Math.Cos(Rotation), (float)Math.Sin(Rotation));
