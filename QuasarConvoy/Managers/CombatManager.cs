@@ -53,10 +53,10 @@ namespace QuasarConvoy.Managers
 
         
 
-        public void Draw(SpriteBatch spriteBatch)
+        public void Draw(GameTime gameTime,SpriteBatch spriteBatch)
         {
             foreach (var proj in projectiles)
-                proj.Draw(spriteBatch);
+                proj.Draw(gameTime,spriteBatch);
         }
     }
 }

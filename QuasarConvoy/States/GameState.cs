@@ -37,6 +37,8 @@ namespace QuasarConvoy.States
         private SpriteBatch _spriteBatch;
         private int ver = 0;
 
+        GraphicsDevice Graphics;
+
         SpriteFont _font;
         private Camera _camera;
 
@@ -64,6 +66,7 @@ namespace QuasarConvoy.States
             float width = _graphicsDevice.PresentationParameters.BackBufferWidth;
             float height = _graphicsDevice.PresentationParameters.BackBufferHeight;
 
+            Graphics = _graphicsDevice;
             dBManager = new DBManager();
             query = "SELECT Currency FROM UserInfo WHERE ID = 1";
             int result = int.Parse(dBManager.SelectElement(query));
@@ -74,16 +77,14 @@ namespace QuasarConvoy.States
             currencyDisplay.x = (int)(3 * width) / 4;
             currencyDisplay.y = (int)(height / 16);
             currencyDisplay.value = result + " CC";
-            _graphics = new GraphicsDeviceManager(this);
+            //_graphics = new GraphicsDeviceManager(this);
 
-            Content.RootDirectory = "Content";
-            IsMouseVisible = true;
             LoadContent(_graphicsDevice,_contentManager);
         }
 
         
 
-        protected override void LoadContent(GraphicsDevice graphicsDevice, ContentManager Content)
+        protected void LoadContent(GraphicsDevice graphicsDevice, ContentManager Content)
         {
             _spriteBatch = new SpriteBatch(graphicsDevice);
 
@@ -94,7 +95,7 @@ namespace QuasarConvoy.States
 
             BackgroundManager = new BackgroundManager(Content.Load<Texture2D>("starparticle"));
 
-            _font = Content.Load<SpriteFont>("Font");
+            _font = Content.Load<SpriteFont>("Fonts/Font");
 
             _combatManager = new CombatManager(Content);
 
@@ -150,7 +151,7 @@ namespace QuasarConvoy.States
             }
         }
         
-        protected override void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
             KeyboardState keyboard = Keyboard.GetState();
 
@@ -173,8 +174,8 @@ namespace QuasarConvoy.States
             currencyDisplay.value = result + " CC";
             //cleo upp
             
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+            //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+                //Exit();
 
             BackgroundManager.Update(_camera);
 
@@ -195,18 +196,18 @@ namespace QuasarConvoy.States
 
 
 
-            base.Update(gameTime);
+            //base.Update(gameTime);
         }
 
-        protected override void Draw(GameTime gameTime)
+        public override void Draw(GameTime gameTime, SpriteBatch _spriteBatch)
         {
             
-            GraphicsDevice.Clear(Color.Black);
+            Graphics.Clear(Color.Black);
 
             //Batch 1 Stationary: BG + text
             _spriteBatch.Begin();
-            bg.Draw(_spriteBatch);
-            BackgroundManager.Draw(_spriteBatch);
+            bg.Draw(gameTime,_spriteBatch);
+            BackgroundManager.Draw(gameTime,_spriteBatch);
             _spriteBatch.DrawString(_font,
                 string.Format("stars:{0} \n MaxStars:{1}",
                 BackgroundManager.particles.Count, 200 + (_camera.Zoom < 1 ? 10 * (1 / _camera.Zoom - 1) : -50 * _camera.Zoom)),
@@ -235,10 +236,10 @@ namespace QuasarConvoy.States
               null, null, null, _camera.Transform);
 
             foreach (var sprite in _sprites)
-                sprite.Draw(_spriteBatch);
+                sprite.Draw(gameTime,_spriteBatch);
             foreach (var ship in _convoy)
-                ship.Draw(_spriteBatch);
-            _combatManager.Draw(_spriteBatch);
+                ship.Draw(gameTime,_spriteBatch);
+            _combatManager.Draw(gameTime, _spriteBatch);
 
 
 
@@ -246,14 +247,14 @@ namespace QuasarConvoy.States
                 throw new System.Exception("Not loaded");
 
             _spriteBatch.End();
-            spriteBatch.Begin();
+            _spriteBatch.Begin();
 
-            spriteBatch.DrawString(font, currencyDisplay.value, new Vector2(currencyDisplay.x, currencyDisplay.y), Color.White);
+            _spriteBatch.DrawString(font, currencyDisplay.value, new Vector2(currencyDisplay.x, currencyDisplay.y), Color.White);
 
-            spriteBatch.End();
+            _spriteBatch.End();
 
 
-            base.Draw(gameTime);
+            //base.Draw(gameTime);
         }
         
         

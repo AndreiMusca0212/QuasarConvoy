@@ -26,6 +26,10 @@ namespace QuasarConvoy
 
         private Color background = Color.Black;
 
+        public static int ScreenWidth;
+        public static int ScreenHeight;
+
+        public GameState GameState;
         public void ChangeStates(State state)
         {
             nextState = state;
@@ -59,14 +63,6 @@ namespace QuasarConvoy
             currentState = new MenuState(this, _graphics.GraphicsDevice, Content);
         }
 
-        private void ShipUpdate(Ship sprite,GameTime gameTime)
-        {
-            if (!sprite.IsControlled)
-            {
-                sprite.Update(gameTime, _sprites);
-                sprite.Follow(_player.ControlledShip);
-            }
-        }
         protected override void Update(GameTime gameTime)
         {
             if(nextState != null)
@@ -88,5 +84,7 @@ namespace QuasarConvoy
 
             base.Draw(gameTime);
         }
+
+        
     }
 }

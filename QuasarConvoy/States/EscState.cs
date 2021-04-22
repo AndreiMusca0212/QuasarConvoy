@@ -105,7 +105,7 @@ namespace QuasarConvoy.States
 
         private void ResumeButton_Click(object sender, EventArgs e)
         {
-            game.ChangeStates(new GameState(game, graphicsDevice, contentManager));
+            game.ChangeStates(game.GameState);
         }
 
         private void SaveAndQuitButton_Click(object sender, EventArgs e)

@@ -48,9 +48,9 @@ namespace QuasarConvoy.Sprites
         }*/
         
         #endregion
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw(GameTime gameTime,SpriteBatch spriteBatch)
         {
-            base.Draw(spriteBatch);
+            base.Draw(gameTime,spriteBatch);
                 if (_animationManager != null)
                     _animationManager.Draw(spriteBatch,scale);
                 else throw new Exception("Not ok");

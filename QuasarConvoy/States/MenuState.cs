@@ -82,7 +82,7 @@ namespace QuasarConvoy.States
                 if (transitionAlpha < 1.4f)
                     transitionAlpha += 0.02f;
                 if(transitionAlpha >= 1.4f)
-                    game.ChangeStates(new GameState(game, graphicsDevice, contentManager));
+                    game.ChangeStates(game.GameState);
             }
             else
                 foreach (var component in components)
@@ -92,6 +92,7 @@ namespace QuasarConvoy.States
         {
             beginTransitionFade = true;
             isTransitioning = true;
+            game.GameState = new GameState(game, graphicsDevice, contentManager);
         }
         private void QuitButton_Click(object sender, EventArgs e)
         {

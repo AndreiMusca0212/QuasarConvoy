@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using QuasarConvoy.Controls;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -45,7 +46,7 @@ namespace QuasarConvoy.Sprites
 
         #endregion
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw(GameTime gameTime,SpriteBatch spriteBatch)
         {
             if (_texture != null)
                 spriteBatch.Draw(_texture,
@@ -72,7 +73,10 @@ namespace QuasarConvoy.Sprites
         
         public virtual void Update(GameTime gametime, List<Sprite> sprites)
         {  }
-        public override void Update(GameTime gameTime, SpriteBatch spriteBatch)
+        public virtual void Update(GameTime gameTime, SpriteBatch spriteBatch)
+        { }
+
+        public override void Update(GameTime gameTime)
         { }
     }
 }

@@ -89,10 +89,10 @@ namespace QuasarConvoy.Managers
             GenerateBG(cam);
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public void Draw(GameTime gametime,SpriteBatch spriteBatch)
         {
             foreach (var part in particles)
-                part.Draw(spriteBatch);
+                part.Draw(gametime,spriteBatch);
         }
 
     }

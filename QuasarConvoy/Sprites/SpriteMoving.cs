@@ -130,7 +130,7 @@ namespace QuasarConvoy.Sprites
         {
             Layer = 0.2f;
         }
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw(GameTime gameTime,SpriteBatch spriteBatch)
         {
             if (_texture != null)
                 spriteBatch.Draw(_texture,

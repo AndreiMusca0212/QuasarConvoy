@@ -7,6 +7,7 @@ using System.Linq;
 using System.Data;
 using System.Data.SqlClient;
 using System.Configuration;
+using System.IO;
 
 namespace QuasarConvoy
 {
@@ -16,17 +17,34 @@ namespace QuasarConvoy
 
         public DBManager()
         {
-            string connectionString = "Data Source = (LocalDB)\\MSSQLLocalDB; AttachDbFilename = \"D:\\cleopatra\\Atestat\\Quasar Convoy\\QuasarConvoy\\QCdatabase.mdf\"; Integrated Security = True";
-            connection = new SqlConnection(connectionString);
+
+            /*string fileName = "QCdatabase.mdf";
+            string path = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.Parent.FullName;
+            path = Path.Combine(path, fileName);*/
+            //string connectionString = "Data Source = (LocalDB)\\MSSQLLocalDB; AttachDbFilename = " + path + "; Integrated Security = True"; 
+            string connectionString = "Data Source = (LocalDB)\\MSSQLLocalDB; AttachDbFilename ="+ Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.Parent.Parent.FullName + "\\QCdatabase.mdf; Integrated Security = True";
+            connection = new SqlConnection(connectionString); //daca scriu asa merge --- La GetParent am adaugat inca un Parent pentru ca lua inca un folder care nu exista; am incorporat numele in string pt simplicitate
         }
 
         private bool OpenConnection()
         {
+            StringBuilder errorMessages = new StringBuilder();
             try
             {
                 connection.Open();
                 return true;
-            }catch(SqlException e){}
+            }catch(SqlException e)
+            {
+                for (int i = 0; i < e.Errors.Count; i++)
+                {
+                    errorMessages.Append("Index #" + i + "\n" +
+                        "Message: " + e.Errors[i].Message + "\n" +
+                        "LineNumber: " + e.Errors[i].LineNumber + "\n" +
+                        "Source: " + e.Errors[i].Source + "\n" +
+                        "Procedure: " + e.Errors[i].Procedure + "\n");
+                }
+                //Console.WriteLine(errorMessages.ToString());
+            }
             return false;
         }
 

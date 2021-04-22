@@ -62,7 +62,8 @@ namespace QuasarConvoy.Controls
         public Button(Texture2D _texture, SpriteFont _font, ContentManager _content, float _scale)
         {
             dBManager = new DBManager();
-            SoundLevel = int.Parse(dBManager.SelectElement(query));
+            string aux = dBManager.SelectElement(query);
+            SoundLevel = int.Parse(aux);
 
             //Button Specifics
             texture = _texture;
@@ -80,7 +81,9 @@ namespace QuasarConvoy.Controls
         public Button(Texture2D _texture, ContentManager _content)
         {
             dBManager = new DBManager();
-            SoundLevel = int.Parse(dBManager.SelectElement(query));
+            
+            string aux = dBManager.SelectElement(query);
+            SoundLevel = int.Parse(aux);
 
             //Button Specifics
             texture = _texture;
