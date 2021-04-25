@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using QuasarConvoy.Controls;
+using QuasarConvoy.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -137,6 +138,7 @@ namespace QuasarConvoy.States
             
         }
 
+        Input Input = new Input(Keyboard.GetState());
         public override void Update(GameTime gameTime)
         {
             //Escape InventoryState with either 'I' or 'Esc'
@@ -144,15 +146,17 @@ namespace QuasarConvoy.States
 
             bool key1Pressed = (currentInventoryState.IsKeyUp(Keys.I) && previousInventoryState.IsKeyDown(Keys.I));
 
-            if (key1Pressed)
-                game.ChangeStates(new GameState(game, graphicsDevice, contentManager));
+            if (Input.WasPressed(Keys.I, Keyboard.GetState()) ||Input.WasPressed(Keys.Escape))
+                game.ChangeStates(game.GameState);
+            Input.Refresh();
+            /*
             previousInventoryState = currentInventoryState;
 
             bool key2Pressed = (currentEscState.IsKeyUp(Keys.Escape) && previousEscState.IsKeyDown(Keys.Escape));
 
             if (key2Pressed)
-                game.ChangeStates(new GameState(game, graphicsDevice, contentManager));
-            previousEscState = currentEscState;
+                game.ChangeStates(game.GameState);
+            previousEscState = currentEscState;*/
 
             //Elements of InventoryState
             foreach (var component in components)

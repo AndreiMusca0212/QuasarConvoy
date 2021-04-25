@@ -17,9 +17,25 @@ namespace QuasarConvoy.Sprites
     {
         #region Fields
 
+        public float rott=0f;
+
         protected Vector2 _position;
 
-        public float scale = 4f;
+        public float scale = 1f;
+
+        public float Rotation
+        {
+            set
+            {
+                rott = value;
+                while (rott > Math.PI)
+                    rott -= (float)Math.PI * 2;
+                while (rott < -1 * Math.PI)
+                    rott += (float)Math.PI * 2;
+            }
+
+            get { return rott; }
+        }
         #endregion
 
         #region Properties
@@ -53,7 +69,7 @@ namespace QuasarConvoy.Sprites
                     Position,
                     new Rectangle(0,0,_texture.Width, _texture.Height),
                     Color.White,
-                    0f,
+                    Rotation,
                     Vector2.Zero,
                     scale,
                     SpriteEffects.None,

@@ -6,6 +6,7 @@ using QuasarConvoy.Controls;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using QuasarConvoy.Models;
 
 namespace QuasarConvoy.States
 {
@@ -88,15 +89,17 @@ namespace QuasarConvoy.States
             
         }
 
+        Input Input = new Input(Keyboard.GetState());
         public override void Update(GameTime gameTime)
         {
-            currentEscState = Keyboard.GetState();
+            //currentEscState = Keyboard.GetState();
 
-            bool keyPressed = (currentEscState.IsKeyUp(Keys.Escape) && previousEscState.IsKeyDown(Keys.Escape));
-
-            if(keyPressed)
-                game.ChangeStates(new GameState(game, graphicsDevice, contentManager));
-            previousEscState = currentEscState;
+            //bool keyPressed = (currentEscState.IsKeyUp(Keys.Escape) && previousEscState.IsKeyDown(Keys.Escape));
+            
+            if (Input.WasPressed(Keys.Escape))
+                game.ChangeStates(game.GameState);
+            //Input.Refresh();
+            //previousEscState = currentEscState;
 
             foreach (var component in components)
                 component.Update(gameTime);

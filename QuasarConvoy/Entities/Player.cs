@@ -42,7 +42,7 @@ namespace QuasarConvoy.Entities
 
         public void SwitchShip(List<Ship> convoy)
         {
-            if(Input.WasPressed(Input.NextShip))
+            if(Input.WasPressed(Input.NextShip,Keyboard.GetState()))
             {
                 if (shipIndex >= convoy.Count-1)
                     shipIndex = 0;
@@ -151,6 +151,7 @@ namespace QuasarConvoy.Entities
             ControlledShip.MoveControlled(Input);
             ControlledShip.Update(gametime, sprites);
             SwitchShip(convoy);
+            Input.Refresh();
         }
 
 

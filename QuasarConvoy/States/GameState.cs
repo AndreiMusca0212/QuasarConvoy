@@ -13,6 +13,7 @@ using QuasarConvoy.Entities.Ships;
 using QuasarConvoy.Controls;
 using System;
 using System.Text;
+using QuasarConvoy.Entities.Planets;
 
 namespace QuasarConvoy.States
 {
@@ -31,7 +32,6 @@ namespace QuasarConvoy.States
             public string value;
         }
         element currencyDisplay;
-        
         
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
@@ -59,8 +59,19 @@ namespace QuasarConvoy.States
 
         List<Ship> _convoy;
 
-        //List<Ship> _convoy;
+        public List<Planet> _planets;
 
+        #region Getters
+        public Vector2 GetPlayerPos()
+        {
+            return _player.ControlledShip.Position;
+        }
+
+        public float GetPLayerRott()
+        {
+            return _player.ControlledShip.Rotation;
+        }
+        #endregion
         public GameState(Game1 _game, GraphicsDevice _graphicsDevice, ContentManager _contentManager):base(_game,_graphicsDevice,_contentManager)
         {
             float width = _graphicsDevice.PresentationParameters.BackBufferWidth;
@@ -78,6 +89,26 @@ namespace QuasarConvoy.States
             currencyDisplay.y = (int)(height / 16);
             currencyDisplay.value = result + " CC";
             //_graphics = new GraphicsDeviceManager(this);
+
+            _planets = new List<Planet>
+            {
+                new Frost(_contentManager)
+                {
+                    Position=new Vector2(30000,20000)
+                },
+                new Terran(_contentManager)
+                {
+                    Position=new Vector2(120000,50000)
+                },
+                new Gas(_contentManager)
+                {
+                    Position= new Vector2(80000, 140000)
+                },
+                new Dry(_contentManager)
+                {
+                    Position=new Vector2(55000,40000)
+                }
+            };
 
             LoadContent(_graphicsDevice,_contentManager);
         }
@@ -136,12 +167,44 @@ namespace QuasarConvoy.States
             ver = 1;
 
             _player = new Player(_convoy);
-
-
-
-
         }
 
+        Input Input = new Input(Keyboard.GetState());
+        public void StateControl()
+        {
+            /*KeyboardState keyboard = Keyboard.GetState();
+
+            currentInventoryState = currentEscState = keyboard;
+
+            bool invActivated = (currentInventoryState.IsKeyUp(Keys.I) && previousInventoryState.IsKeyDown(Keys.I));
+            bool escActivated = (currentEscState.IsKeyUp(Keys.Escape) && previousEscState.IsKeyDown(Keys.Escape));*/
+
+            if (Input.WasPressed(Keys.Escape))
+            {  
+                game.ChangeStates(new EscState(game, graphicsDevice, contentManager));
+                //Input.Refresh();
+            }
+            //previousEscState = currentEscState;
+
+            if (Input.WasPressed(Keys.I,Keyboard.GetState()))
+            {
+                game.ChangeStates(new InventoryState(game, graphicsDevice, contentManager));
+                Input.Refresh();
+            }
+
+
+            //previousInventoryState = currentInventoryState;
+
+            if (Input.WasPressed(Keys.M,Keyboard.GetState()))
+            {
+                game.ChangeStates(new MapState(game, graphicsDevice, contentManager));
+                Input.Refresh();
+            }
+
+            
+            Input.Refresh();
+            
+        }
         private void ShipUpdate(Ship sprite, GameTime gameTime)
         {
             if (!sprite.IsControlled)
@@ -153,22 +216,8 @@ namespace QuasarConvoy.States
         
         public override void Update(GameTime gameTime)
         {
-            KeyboardState keyboard = Keyboard.GetState();
 
-            currentInventoryState = currentEscState = keyboard;
-
-            bool invActivated = (currentInventoryState.IsKeyUp(Keys.I) && previousInventoryState.IsKeyDown(Keys.I));
-            bool escActivated = (currentEscState.IsKeyUp(Keys.Escape) && previousEscState.IsKeyDown(Keys.Escape));
-
-            if (escActivated)
-                game.ChangeStates(new EscState(game, graphicsDevice, contentManager));
-            previousEscState = currentEscState;
-
-            if (invActivated)
-                game.ChangeStates(new InventoryState(game, graphicsDevice, contentManager));
-            previousInventoryState = currentInventoryState;
-            
-
+            StateControl();
             query = "SELECT Currency FROM UserInfo WHERE ID = 1";
             int result = int.Parse(dBManager.SelectElement(query));
             currencyDisplay.value = result + " CC";
@@ -189,6 +238,7 @@ namespace QuasarConvoy.States
             {
                 ShipUpdate(ship, gameTime);
             }
+
             _player.Update(gameTime, _sprites, _convoy);
             _camera.Update(_player.ControlledShip, _player.Input);
 

@@ -14,8 +14,7 @@ namespace QuasarConvoy.Sprites
 {
     class SpriteMoving:Sprite
     {
-        public float rott;
-
+       
         public float Speed = 1f;
 
         public Vector2 Velocity;
@@ -24,19 +23,7 @@ namespace QuasarConvoy.Sprites
         protected float AngSpeed { set; get; }
         protected float SpeedCap { set; get; }
 
-        public float Rotation
-        {
-            set
-            {
-                rott = value;
-                while (rott > Math.PI)
-                    rott -= (float)Math.PI * 2;
-                while (rott < -1 * Math.PI)
-                    rott += (float)Math.PI * 2;
-            }
-
-            get { return rott; }
-        }
+        
 
         public Vector2 Distance(Vector2 dest)
         {
