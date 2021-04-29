@@ -22,8 +22,9 @@ namespace QuasarConvoy
             string path = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.Parent.FullName;
             path = Path.Combine(path, fileName);*/
             //string connectionString = "Data Source = (LocalDB)\\MSSQLLocalDB; AttachDbFilename = " + path + "; Integrated Security = True"; 
-            string connectionString = "Data Source = (LocalDB)\\MSSQLLocalDB; AttachDbFilename ="+ Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.Parent.FullName + "\\QCdatabase.mdf; Integrated Security = True";
+            string connectionString = "Data Source = (LocalDB)\\MSSQLLocalDB; AttachDbFilename =" + Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.Parent.FullName + "\\QCdatabase.mdf; Integrated Security = True";
             connection = new SqlConnection(connectionString); //daca scriu asa merge 
+        }
 
         private bool OpenConnection()
         {

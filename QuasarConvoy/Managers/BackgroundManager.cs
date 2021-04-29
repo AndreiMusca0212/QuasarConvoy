@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using QuasarConvoy.Ambient;
 using QuasarConvoy.Core;
+using QuasarConvoy.States;
 
 namespace QuasarConvoy.Managers
 {
@@ -17,22 +18,15 @@ namespace QuasarConvoy.Managers
         Random random=new Random();
         int screenWidth = Game1.ScreenWidth;
         int screenHeight = Game1.ScreenHeight;
-        public BackgroundManager(Texture2D tex)
+        public BackgroundManager(Texture2D tex,Vector2 startpos)
         {
             texture = tex;
             particles = new List<Particle>();
             for (int i = 0; i < 200; i++)
             {
-                
-                particles.Add(
-                    new Particle(texture, random.Next(1, 10) / 100f)
-                    {
-                        Position=new Vector2(random.Next(0, screenWidth), random.Next(0, screenHeight))
-                    });
+                particles.Add(GenerateParticle(random.Next(0, screenWidth), random.Next(0, screenHeight)));
             }
-
         }
-
         private Particle GenerateParticle(float x,float y)
         {
             return new Particle(texture, random.Next(1, 10) / 100f)

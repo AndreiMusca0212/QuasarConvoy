@@ -10,11 +10,13 @@ using QuasarConvoy.Ambient;
 
 namespace QuasarConvoy.Entities
 {
-    class Projectile:SpriteMoving
+    public class Projectile:SpriteMoving
     {
         public bool isRemoved;
         public bool friendly;
         private float speedInd;
+        public Ship source;
+        public int damage;
         public Projectile(ContentManager content,float velocity,float rott):base(content)
         {
             Layer = 0.2f;

@@ -8,6 +8,7 @@ namespace QuasarConvoy.Controls
 {
     public abstract class Component
     {
+        public bool IsRemoved { set; get; }
         public abstract void Draw(GameTime gameTime, SpriteBatch spriteBatch);
         public abstract void Update(GameTime gameTime);
     }
