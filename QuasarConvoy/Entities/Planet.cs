@@ -13,12 +13,18 @@ namespace QuasarConvoy.Entities
         public Vector2 Position { set; get; }
         public PlanetSprite _sprite;
         public Sprite _icon;
-        public float Size { get; protected set; }
-        public string Type { get; protected set; }
+        public float Size { get; set; }
+        public string Type { get; set; }
         public bool IsVisible { set; get; }
+        public int ID { set; get; }
         public Planet(ContentManager Content)
         {
             IsVisible = false;
+        }
+
+        public Planet(Texture2D texture)
+        {
+            _sprite = new PlanetSprite(texture);
         }
 
         public virtual void Update(GameTime gameTime)

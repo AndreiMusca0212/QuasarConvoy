@@ -76,6 +76,8 @@ namespace QuasarConvoy.States
         public List<TradeStation> _stations;
 
         public Vector2 spawnPos;
+        private const float secondsToBeElapsed = 10;
+        private float secondsElapsed = secondsToBeElapsed;
 
         #region Getters
         public Vector2 GetPlayerPos()
@@ -136,7 +138,7 @@ namespace QuasarConvoy.States
             //_graphics = new GraphicsDeviceManager(this);
 
             _planets = new List<Planet>
-            {
+            {/*
                 new Frost(_contentManager)
                 {
                     Position=new Vector2(-41000,-54000)
@@ -156,8 +158,19 @@ namespace QuasarConvoy.States
                 new Star(contentManager)
                 {
                     Position=new Vector2(0,0)
-                }
+                }*/
             };
+
+            for(int i=1;i<=dBManager.SelectColumnFrom("[Planets]","ID").Count;i++)
+            {
+                Planet plan = new Planet(contentManager.Load<Texture2D>(dBManager.SelectElement("SELECT Name FROM [Planets] WHERE ID=" + i.ToString())));
+                float X = float.Parse(dBManager.SelectElement("SELECT PositionX FROM [Planets] WHERE ID = " + i.ToString()));
+                float Y = float.Parse(dBManager.SelectElement("SELECT PositionY FROM [Planets] WHERE ID = " + i.ToString()));
+                plan.Position = new Vector2(X, Y);
+                plan.Size = float.Parse(dBManager.SelectElement("SELECT Size FROM [Planets] WHERE ID = " + i.ToString()));
+                plan.ID = i;
+                _planets.Add(plan);
+            }
 
             _stations = new List<TradeStation>();
 
@@ -196,7 +209,7 @@ namespace QuasarConvoy.States
                     Position = plan.Position-new Vector2(plan._sprite._texture.Width/2* plan.Size * 2f, plan._sprite._texture.Height / 2 * plan.Size * 2f)
                 };
                 _sprites.Add(ps);
-                if(!(plan is Star))
+                if(!(plan.ID==5))
                     _stations.Add(new TradeStation(contentManager, plan));
             }
 
@@ -276,8 +289,6 @@ namespace QuasarConvoy.States
                 ship.hasHealthbar = true;
             }
 
-
-
             ver = 1;
 
             _player = new Player(_convoy);
@@ -286,8 +297,6 @@ namespace QuasarConvoy.States
         Input Input = new Input(Keyboard.GetState());
         public void StateControl()
         {
-            
-
             if (Input.WasPressed(Keys.Escape))
             {  
                 game.ChangeStates(new EscState(game, graphicsDevice, contentManager));
@@ -307,6 +316,55 @@ namespace QuasarConvoy.States
 
             Input.Refresh();
             
+        }
+
+        public TradeStation GetClosestTrader()
+        {
+            float dist = _player.Distance(_stations[0].Position).Length();
+            int j = 0;
+            for(int i=1;i<_stations.Count;i++)
+            {
+                if (_player.Distance(_stations[0].Position).Length() < dist)
+                {
+                    dist = _player.Distance(_stations[0].Position).Length();
+                    j = i;
+                }
+            }
+            return _stations[j];
+        }
+
+        bool toolTipTradeVis = false;
+        public void EnterTrade()
+        {
+            if(_player.Distance(GetClosestTrader().Position).Length()<200)
+            {
+                if(!toolTipTradeVis)
+                    toolTipTradeVis = true;
+                if (Input.IsPressed(_player.Input.OpenTrade, Keyboard.GetState()))
+                {
+                    game.ChangeStates(new TradeState(game, graphicsDevice, contentManager, GetClosestTrader().Home.ID));
+                    Input.Refresh();
+                }
+            }
+            else
+                if (toolTipTradeVis)
+                    toolTipTradeVis = false;
+        }
+        private void RandomizePlanetInventory()
+        {
+            Random rand = new Random(DateTime.Now.Minute);
+
+            for (int i = 1; i <= 6; i++)
+            {
+                query = "SELECT ID FROM [PlanetInventory] WHERE PlanetID = " + i;
+                List<string> IDS = dBManager.SpecificSelectColumnFrom("[PlanetInventory]", "ID", "PlanetID", i + "");
+                foreach (string id in IDS)
+                {
+                    int ID = int.Parse(id);
+                    query = "UPDATE [PlanetInventory] SET ItemCount = " + rand.Next(1, 15) + " WHERE ID = " + ID;
+                    dBManager.QueryIUD(query);
+                }
+            }
         }
         private void ShipUpdate(Ship sprite, GameTime gameTime, List<Ship> bl)
         {
@@ -355,7 +413,15 @@ namespace QuasarConvoy.States
 
             _player.Update(gameTime, _sprites, _convoy);
             _camera.Update(_player.ControlledShip, _player.Input);
+            EnterTrade();
+            var timer = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            secondsElapsed -= timer;
 
+            if (secondsElapsed <= 0)
+            {
+                RandomizePlanetInventory();
+                secondsElapsed = secondsToBeElapsed;
+            }
             _combatManager.Update(gameTime, _camera,_convoy.Concat(_enemies).ToList(),this);
 
             PostUpdate(gameTime);
@@ -403,16 +469,7 @@ namespace QuasarConvoy.States
             _spriteBatch.Begin();
 
             _spriteBatch.DrawString(font, currencyDisplay.value, new Vector2(currencyDisplay.x, currencyDisplay.y), Color.White);
-            _spriteBatch.DrawString(_font,
-               string.Format("stars:{0} \n MaxStars:{1}",
-               BackgroundManager.particles.Count, 200 + (_camera.Zoom < 1 ? 10 * (1 / _camera.Zoom - 1) : -50 * _camera.Zoom)),
-               new Vector2(30, 30),
-               Color.Orange,
-               0f,
-               new Vector2(0, 0),
-               1f,
-               SpriteEffects.None,
-               0.6f);
+            
             _spriteBatch.DrawString(_font,
                 string.Format("posX={0} posY={1}",
                 _player.ControlledShip.Position.X, _player.ControlledShip.Position.Y),
@@ -422,6 +479,17 @@ namespace QuasarConvoy.States
                 new Vector2(0, 0),
                 1f,
                 SpriteEffects.None,
+                0.1f);
+            if(toolTipTradeVis)
+            _spriteBatch.DrawString(_font,
+                "Press F to open trade",
+                new Vector2(Game1.ScreenWidth / 2, 3 * Game1.ScreenHeight / 4),
+                Color.White,
+                0f,
+                Vector2.Zero,
+                1f,
+                SpriteEffects.None,
+                0.1f);
             _spriteBatch.End();
 
 

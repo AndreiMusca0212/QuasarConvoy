@@ -29,7 +29,7 @@ namespace QuasarConvoy.Entities
                     new Rectangle(0, 0, _texture.Width, _texture.Height),
                     Color.White,
                     0f,
-                    Vector2.Zero,
+                    new Vector2(_texture.Width/2,_texture.Height/2),
                     0.7f,
                     SpriteEffects.None,
                     0.04f

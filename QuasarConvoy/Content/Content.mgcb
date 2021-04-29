@@ -61,14 +61,6 @@
 /processorParam:TextureFormat=Color
 /build:Controls/Sound Bar.png
 
-
-#begin Fonts/EvenSmallerFont.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Compressed
-/build:Fonts/EvenSmallerFont.spritefont
-
 #begin DessertPlanet.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -93,6 +85,12 @@
 /processorParam:TextureFormat=Color
 /build:elephant.png
 
+#begin Fonts/EvenSmallerFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Fonts/EvenSmallerFont.spritefont
 
 #begin Fonts/Font.spritefont
 /importer:FontDescriptionImporter
@@ -100,7 +98,6 @@
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Compressed
 /build:Fonts/Font.spritefont
-
 
 #begin Fonts/SmallFont.spritefont
 /importer:FontDescriptionImporter
@@ -132,7 +129,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:GasGiant.png
-
 
 #begin interceptor.png
 /importer:TextureImporter
@@ -542,7 +538,6 @@
 /processorParam:TextureFormat=Color
 /build:nebula.jpg
 
-
 #begin Orbit.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -645,42 +640,6 @@
 /processorParam:TextureFormat=Color
 /build:StarParticleBG.png
 
-#begin UI Stuff/Buttons/ConvoyShip1.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:UI Stuff/Buttons/ConvoyShip1.png
-
-#begin starparticle.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:starparticle.png
-
-#begin StarParticleBG.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:StarParticleBG.png
-
 #begin Sun.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -693,6 +652,65 @@
 /processorParam:TextureFormat=Color
 /build:Sun.png
 
+#begin TerranPlanet.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:TerranPlanet.png
+
+#begin TradeTerminal.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:TradeTerminal.png
+
+#begin UI Stuff/Buttons/ConvoyShip1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:UI Stuff/Buttons/ConvoyShip1.png
+
+#begin UI Stuff/Buttons/Resume Button.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:UI Stuff/Buttons/Resume Button.png
+
+#begin UI Stuff/Buttons/Save and Quit Button.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:UI Stuff/Buttons/Save and Quit Button.png
 
 #begin UI Stuff/Buttons/Trade Button.png
 /importer:TextureImporter
@@ -717,18 +735,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:UI Stuff/Buttons/Tutorial Button.png
-
-#begin TerranPlanet.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:TerranPlanet.png
 
 #begin UI Stuff/Currency Scroll.png
 /importer:TextureImporter
@@ -766,7 +772,7 @@
 /processorParam:TextureFormat=Color
 /build:UI Stuff/HUD.png
 
-#begin TradeTerminal.png
+#begin UI Stuff/Images/EscMessage.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -776,19 +782,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:TradeTerminal.png
-
-#begin UI Stuff/Buttons/ConvoyShip1.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:UI Stuff/Buttons/ConvoyShip1.png
+/build:UI Stuff/Images/EscMessage.png
 
 #begin UI Stuff/Images/Inventory Box.png
 /importer:TextureImporter
@@ -814,7 +808,7 @@
 /processorParam:TextureFormat=Color
 /build:UI Stuff/Images/Inventory Tech Effect.png
 
-#begin UI Stuff/Buttons/MSInventory.png
+#begin UI Stuff/Images/TechEffect.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -824,44 +818,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:UI Stuff/Buttons/MSInventory.png
-
-#begin UI Stuff/Buttons/Resume Button.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:UI Stuff/Buttons/Resume Button.png
-
-
-#begin UI Stuff/Images/TradeState InventoryBox.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:UI UI Stuff/Images/TradeState InventoryBox.png
-
-#begin UI Stuff/Buttons/Save and Quit Button.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:UI Stuff/Buttons/Save and Quit Button.png
+/build:UI Stuff/Images/TechEffect.png
 
 #begin UI Stuff/Images/TradeState InventoryBox.png
 /importer:TextureImporter
@@ -887,42 +844,6 @@
 /processorParam:TextureFormat=Color
 /build:UI Stuff/Images/TradeTexture Bar.png
 
-#begin UI Stuff/Buttons/Save and Quit Button.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:UI Stuff/Buttons/Save and Quit Button.png
-
-#begin UI Stuff/Buttons/Tutorial Button.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:UI Stuff/Buttons/Tutorial Button.png
-
-#begin UI Stuff/Images/TradeTexture Bar.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:UI Stuff/Images/TradeTexture Bar.png
-
 #begin UI Stuff/Images/TransactionInventory.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -934,68 +855,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:UI Stuff/Images/TransactionInventory.png
-
-#begin UI Stuff/HUD.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:UI Stuff/HUD.png
-
-#begin UI Stuff/Images/EscMessage.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:UI Stuff/Images/EscMessage.png
-
-
-#begin UI Stuff/nextShipButton.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:UI Stuff/nextShipButton.png
-
-#begin UI Stuff/Images/Inventory Tech Effect.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:UI Stuff/Images/Inventory Tech Effect.png
-
-#begin UI Stuff/Images/TechEffect.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:UI Stuff/Images/TechEffect.png
-
 
 #begin UI Stuff/Inventory Box.png
 /importer:TextureImporter
@@ -1009,7 +868,7 @@
 /processorParam:TextureFormat=Color
 /build:UI Stuff/Inventory Box.png
 
-#begin UI Stuff/previousShipButton.png
+#begin UI Stuff/nextShipButton.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1019,7 +878,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:UI Stuff/previousShipButton.png
+/build:UI Stuff/nextShipButton.png
 
 #begin UI Stuff/Play Button.png
 /importer:TextureImporter
@@ -1033,6 +892,18 @@
 /processorParam:TextureFormat=Color
 /build:UI Stuff/Play Button.png
 
+#begin UI Stuff/previousShipButton.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:UI Stuff/previousShipButton.png
+
 #begin UI Stuff/Quit Button.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -1044,7 +915,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:UI Stuff/Quit Button.png
-
 
 #begin UI Stuff/ScrollDown.png
 /importer:TextureImporter
@@ -1058,7 +928,7 @@
 /processorParam:TextureFormat=Color
 /build:UI Stuff/ScrollDown.png
 
-
+#begin UI Stuff/ScrollUp.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1069,6 +939,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:UI Stuff/ScrollUp.png
+
+#begin UI Stuff/TradeState_InventoryBox.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:UI Stuff/TradeState_InventoryBox.png
 
 #begin UI Stuff/UI Tech Effect.png
 /importer:TextureImporter

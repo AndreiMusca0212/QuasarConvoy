@@ -27,6 +27,7 @@ namespace QuasarConvoy.Entities
                 Shoot = Keys.Space,
                 ZoomIN = Keys.O,
                 ZoomOUT = Keys.P,
+                OpenTrade=Keys.F,
             };
         
         int shipIndex=0;
@@ -153,6 +154,10 @@ namespace QuasarConvoy.Entities
         }*/
         #endregion
 
+        public Vector2 Distance(Vector2 dest)
+        {
+            return new Vector2(ControlledShip.Position.X - dest.X, ControlledShip.Position.Y - dest.Y);
+        }
         public void Update(GameTime gametime, List<Sprite> sprites, List<Ship> convoy)
         {
             if (!ControlledShip.IsControlled)

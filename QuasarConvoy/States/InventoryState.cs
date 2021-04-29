@@ -16,6 +16,7 @@ namespace QuasarConvoy.States
         private string query;
         private string currency;
         private Vector2 currencyPos;
+        private Vector2 currencyFrame;
 
         private Texture2D techEffectTexture, inventoryBoxTexture;
         private Rectangle techEffectFrame, inventoryBoxFrame;
@@ -125,7 +126,7 @@ namespace QuasarConvoy.States
             locationFrame = new Vector2(width / 15, techEffectTexture.Height / 5);*/
 
             query = "SELECT Currency FROM [Saves] WHERE ID = 1";
-            currency = int.Parse(dBManager.SelectElement(query));
+            currency = dBManager.SelectElement(query);
             currencyFrame = new Vector2(width - techEffectTexture.Width / 10, techEffectTexture.Height / 5);
 
             query = "DELETE FROM [UserInventory] WHERE ItemCount = 0";

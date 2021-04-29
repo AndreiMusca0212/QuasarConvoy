@@ -18,6 +18,7 @@ namespace QuasarConvoy.Models
         public Keys NextShip { set; get; }
         public Keys ZoomIN { set; get; }
         public Keys ZoomOUT { set; get; }
+        public Keys OpenTrade { set; get; }
 
         #region static
 
