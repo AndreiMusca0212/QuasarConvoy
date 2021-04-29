@@ -11,9 +11,10 @@ namespace QuasarConvoy.Entities.Planets
     {
         public Frost(ContentManager content):base(content)
         {
-            _sprite = new Sprite(content.Load<Texture2D>("FrozenPlanet"));
+            _sprite = new PlanetSprite(content.Load<Texture2D>("FrozenPlanet"));
             Type = "frozen";
             Size = 1f;
+            _sprite.renderDistance = (int)Size * 10000;
         }
     }
 }

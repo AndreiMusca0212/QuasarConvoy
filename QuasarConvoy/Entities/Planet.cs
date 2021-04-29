@@ -11,10 +11,17 @@ namespace QuasarConvoy.Entities
     public class Planet
     {
         public Vector2 Position { set; get; }
-        public Sprite _sprite;
+        public PlanetSprite _sprite;
+        public Sprite _icon;
         public float Size { get; protected set; }
         public string Type { get; protected set; }
+        public bool IsVisible { set; get; }
         public Planet(ContentManager Content)
+        {
+            IsVisible = false;
+        }
+
+        public virtual void Update(GameTime gameTime)
         {
 
         }

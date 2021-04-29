@@ -66,15 +66,15 @@ namespace QuasarConvoy.States
 
             dBManager = new DBManager();
 
-            query = "SELECT Planet FROM UserInfo WHERE ID = 1";
+            /*query = "SELECT Planet FROM [User] WHERE ID = 1";
             location = dBManager.SelectElement(query);
-            locationFrame = new Vector2(width / 15, techEffectTexture.Height / 5);
+            locationFrame = new Vector2(width / 15, techEffectTexture.Height / 5);*/
 
-            query = "SELECT Currency FROM UserInfo WHERE ID = 1";
+            query = "SELECT Currency FROM [Saves] WHERE ID = 1";
             currency = int.Parse(dBManager.SelectElement(query));
             currencyFrame = new Vector2(width - techEffectTexture.Width / 10, techEffectTexture.Height / 5);
 
-            query = "DELETE FROM UserInventory WHERE iCount = 0";
+            query = "DELETE FROM [UserInventory] WHERE ItemCount = 0";
             dBManager.QueryIUD(query);
 
 

@@ -14,6 +14,7 @@ using QuasarConvoy.Controls;
 using System;
 using System.Text;
 using QuasarConvoy.Entities.Planets;
+using System.Linq;
 
 namespace QuasarConvoy.States
 {
@@ -37,7 +38,7 @@ namespace QuasarConvoy.States
         private SpriteBatch _spriteBatch;
         private int ver = 0;
 
-        GraphicsDevice Graphics;
+        public GraphicsDevice Graphics;
 
         SpriteFont _font;
         private Camera _camera;
@@ -53,13 +54,23 @@ namespace QuasarConvoy.States
 
         BackgroundManager BackgroundManager;
 
+        PlanetManager PlanetManager;
+
         public CombatManager _combatManager;
 
-        List<Sprite> _sprites;
+        public List<Sprite> _sprites;
 
-        List<Ship> _convoy;
+        public List<Ship> _convoy;
+
+        public List<Ship> _enemies;
+
+        public List<Component> UI;
 
         public List<Planet> _planets;
+
+        public List<TradeStation> _stations;
+
+        public Vector2 spawnPos;
 
         #region Getters
         public Vector2 GetPlayerPos()
@@ -79,7 +90,7 @@ namespace QuasarConvoy.States
 
             Graphics = _graphicsDevice;
             dBManager = new DBManager();
-            query = "SELECT Currency FROM UserInfo WHERE ID = 1";
+            query = "SELECT Currency FROM [Saves] WHERE ID = 1";
             int result = int.Parse(dBManager.SelectElement(query));
             
             font = _contentManager.Load<SpriteFont>("Fonts/Font");
@@ -94,26 +105,30 @@ namespace QuasarConvoy.States
             {
                 new Frost(_contentManager)
                 {
-                    Position=new Vector2(30000,20000)
+                    Position=new Vector2(-41000,-54000)
                 },
                 new Terran(_contentManager)
                 {
-                    Position=new Vector2(120000,50000)
+                    Position=new Vector2(21500,-10700)
                 },
                 new Gas(_contentManager)
                 {
-                    Position= new Vector2(80000, 140000)
+                    Position= new Vector2(5000, 55000)
                 },
                 new Dry(_contentManager)
                 {
-                    Position=new Vector2(55000,40000)
+                    Position=new Vector2(-13000,-13000)
+                },
+                new Star(contentManager)
+                {
+                    Position=new Vector2(0,0)
                 }
             };
 
+            _stations = new List<TradeStation>();
+
             LoadContent(_graphicsDevice,_contentManager);
         }
-
-        
 
         protected void LoadContent(GraphicsDevice graphicsDevice, ContentManager Content)
         {
@@ -121,10 +136,13 @@ namespace QuasarConvoy.States
 
             _camera = new Camera();
 
-
             bg = new Background(Content.Load<Texture2D>("spaceBG"));
 
-            BackgroundManager = new BackgroundManager(Content.Load<Texture2D>("starparticle"));
+            spawnPos = new Vector2(21500, -10700);
+
+            BackgroundManager = new BackgroundManager(Content.Load<Texture2D>("starparticle"),spawnPos-new Vector2(Game1.ScreenWidth/2,Game1.ScreenHeight/2));
+
+            PlanetManager = new PlanetManager(_planets);
 
             _font = Content.Load<SpriteFont>("Fonts/Font");
 
@@ -132,34 +150,96 @@ namespace QuasarConvoy.States
 
             _sprites = new List<Sprite>
             {
-                new Projectile(Content,0f,0f),
+                
             };
+
+            foreach(var plan in _planets)
+            {
+                PlanetSprite ps = new PlanetSprite(plan._sprite)
+                {
+                    Layer = 0.001f,
+                    scale = plan.Size * 2f,
+                    Position = plan.Position-new Vector2(plan._sprite._texture.Width/2* plan.Size * 2f, plan._sprite._texture.Height / 2 * plan.Size * 2f)
+                };
+                _sprites.Add(ps);
+                if(!(plan is Star))
+                    _stations.Add(new TradeStation(contentManager, plan));
+            }
 
             _convoy = new List<Ship>
             {
-                new Mule1(Content),
-                new Mule1(Content)
+                new Interceptor1(Content)
                 {
-                    Position=new Vector2(100,100)
-                },
-                new Mule1(Content)
-                {
-                    Position=new Vector2(200,100)
-                },
-                new Mule1(Content)
-                {
-                    Position=new Vector2(300,100)
+                    Position=spawnPos+new Vector2(0,0),
+                    CombatManager=_combatManager,
+                    //Speed=5f,
+                    //SpeedCap=30f,
+                    
                 },
                 new Interceptor1(Content)
                 {
-                    Position=new Vector2(200,200),
-                    CombatManager=_combatManager
-                }
+                    Position=spawnPos+new Vector2(100,0),
+                    CombatManager=_combatManager,
+                    //Speed=5f,
+                    //SpeedCap=30f,
+
+                },
+                new Interceptor1(Content)
+                {
+                    Position=spawnPos+new Vector2(0,100),
+                    CombatManager=_combatManager,
+                    //Speed=5f,
+                    //SpeedCap=30f,
+
+                },
+                /*
+                new Mule1(Content)
+                {
+                    Position=spawnPos+new Vector2(100,100)
+                },
+                new Mule1(Content)
+                {
+                    Position=spawnPos+new Vector2(200,100)
+                },
+                new Mule1(Content)
+                {
+                    Position=spawnPos+new Vector2(300,100)
+                },*/
+                
             };
+
+            _enemies = new List<Ship>()
+            {
+                new PirateSniper(Content)
+                {
+                    CombatManager=_combatManager,
+                    Position=spawnPos+new Vector2(400,600),
+                },
+                /*
+                new PirateBrawler(Content)
+                {
+                    CombatManager=_combatManager,
+                    Position=spawnPos+new Vector2(400,400),
+                }*/
+            };
+
+
+            UI = new List<Component>();
 
             foreach (var ship in _convoy)
             {
                 _sprites.Add(ship);
+                UI.Add(new HealthBar(ship, Color.Green, new Vector2(100, 14), graphicsDevice));
+                ship.blacklist = _enemies;
+                ship.hasHealthbar = true;
+            }
+
+            foreach(var ship in _enemies)
+            {
+                _sprites.Add(ship);
+                UI.Add(new HealthBar(ship, Color.Red, new Vector2(100, 14), graphicsDevice));
+                ship.blacklist = _convoy;
+                ship.hasHealthbar = true;
             }
 
 
@@ -172,19 +252,12 @@ namespace QuasarConvoy.States
         Input Input = new Input(Keyboard.GetState());
         public void StateControl()
         {
-            /*KeyboardState keyboard = Keyboard.GetState();
-
-            currentInventoryState = currentEscState = keyboard;
-
-            bool invActivated = (currentInventoryState.IsKeyUp(Keys.I) && previousInventoryState.IsKeyDown(Keys.I));
-            bool escActivated = (currentEscState.IsKeyUp(Keys.Escape) && previousEscState.IsKeyDown(Keys.Escape));*/
+            
 
             if (Input.WasPressed(Keys.Escape))
             {  
                 game.ChangeStates(new EscState(game, graphicsDevice, contentManager));
-                //Input.Refresh();
             }
-            //previousEscState = currentEscState;
 
             if (Input.WasPressed(Keys.I,Keyboard.GetState()))
             {
@@ -192,25 +265,23 @@ namespace QuasarConvoy.States
                 Input.Refresh();
             }
 
-
-            //previousInventoryState = currentInventoryState;
-
             if (Input.WasPressed(Keys.M,Keyboard.GetState()))
             {
                 game.ChangeStates(new MapState(game, graphicsDevice, contentManager));
                 Input.Refresh();
             }
 
-            
             Input.Refresh();
             
         }
-        private void ShipUpdate(Ship sprite, GameTime gameTime)
+        private void ShipUpdate(Ship sprite, GameTime gameTime, List<Ship> bl)
         {
             if (!sprite.IsControlled)
             {
+                sprite.blacklist = bl;
                 sprite.Update(gameTime, _sprites);
-                sprite.Follow(_player.ControlledShip);
+                if(sprite.Friendly&&!sprite.inCombat)
+                    sprite.Follow(_player.ControlledShip);
             }
         }
         
@@ -218,34 +289,43 @@ namespace QuasarConvoy.States
         {
 
             StateControl();
-            query = "SELECT Currency FROM UserInfo WHERE ID = 1";
+            query = "SELECT Currency FROM [Saves] WHERE ID = 1";
             int result = int.Parse(dBManager.SelectElement(query));
             currencyDisplay.value = result + " CC";
             //cleo upp
-            
-            //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                //Exit();
+           
 
             BackgroundManager.Update(_camera);
+            //PlanetManager.Update(gameTime,_player.ControlledShip.Position);
+            foreach (var ship in _convoy)
+            {
+                ShipUpdate(ship, gameTime, _enemies);
+            }
 
+            foreach (var ship in _enemies)
+            {
+                ShipUpdate(ship, gameTime, _convoy);
+            }
             foreach (var sprite in _sprites)
             {
                 if (!(sprite is Ship))
                     sprite.Update(gameTime, _sprites);
             }
+            //Update pentru ambele tabere
+            
 
-            foreach (var ship in _convoy)
+            //Update pentru elemente de UI
+            foreach (var co in UI)
             {
-                ShipUpdate(ship, gameTime);
+                co.Update(gameTime);
             }
 
             _player.Update(gameTime, _sprites, _convoy);
             _camera.Update(_player.ControlledShip, _player.Input);
 
-            _combatManager.Update(gameTime, _camera);
+            _combatManager.Update(gameTime, _camera,_convoy.Concat(_enemies).ToList(),this);
 
-
-
+            PostUpdate(gameTime);
             //base.Update(gameTime);
         }
 
@@ -256,39 +336,29 @@ namespace QuasarConvoy.States
 
             //Batch 1 Stationary: BG + text
             _spriteBatch.Begin();
+
             bg.Draw(gameTime,_spriteBatch);
             BackgroundManager.Draw(gameTime,_spriteBatch);
-            _spriteBatch.DrawString(_font,
-                string.Format("stars:{0} \n MaxStars:{1}",
-                BackgroundManager.particles.Count, 200 + (_camera.Zoom < 1 ? 10 * (1 / _camera.Zoom - 1) : -50 * _camera.Zoom)),
-                new Vector2(30, 30),
-                Color.Orange,
-                0f,
-                new Vector2(0, 0),
-                1f,
-                SpriteEffects.None,
-                0.6f);
-            _spriteBatch.DrawString(_font,
-                string.Format("posX={0} posY={1}",
-                _player.ControlledShip.Position.X, _player.ControlledShip.Position.Y),
-                new Vector2(30, 80),
-                Color.White,
-                0f,
-                new Vector2(0, 0),
-                1f,
-                SpriteEffects.None,
-                0.6f);
+           
             _spriteBatch.End();
 
             _spriteBatch.Begin(SpriteSortMode.FrontToBack,
               BlendState.AlphaBlend,
               SamplerState.PointClamp,
               null, null, null, _camera.Transform);
-
+            //PlanetManager.Draw(gameTime, _spriteBatch);
+            foreach (var st in _stations)
+                st.Draw(gameTime, _spriteBatch);
             foreach (var sprite in _sprites)
                 sprite.Draw(gameTime,_spriteBatch);
             foreach (var ship in _convoy)
                 ship.Draw(gameTime,_spriteBatch);
+            foreach (var ship in _enemies)
+                ship.Draw(gameTime, _spriteBatch);
+            foreach (var co in UI)
+            {
+                co.Draw(gameTime,_spriteBatch);
+            }
             _combatManager.Draw(gameTime, _spriteBatch);
 
 
@@ -300,7 +370,26 @@ namespace QuasarConvoy.States
             _spriteBatch.Begin();
 
             _spriteBatch.DrawString(font, currencyDisplay.value, new Vector2(currencyDisplay.x, currencyDisplay.y), Color.White);
-
+            _spriteBatch.DrawString(_font,
+               string.Format("stars:{0} \n MaxStars:{1}",
+               BackgroundManager.particles.Count, 200 + (_camera.Zoom < 1 ? 10 * (1 / _camera.Zoom - 1) : -50 * _camera.Zoom)),
+               new Vector2(30, 30),
+               Color.Orange,
+               0f,
+               new Vector2(0, 0),
+               1f,
+               SpriteEffects.None,
+               0.6f);
+            _spriteBatch.DrawString(_font,
+                string.Format("posX={0} posY={1}",
+                _player.ControlledShip.Position.X, _player.ControlledShip.Position.Y),
+                new Vector2(30, 80),
+                Color.White,
+                0f,
+                new Vector2(0, 0),
+                1f,
+                SpriteEffects.None,
+                0.6f);
             _spriteBatch.End();
 
 
@@ -322,7 +411,27 @@ namespace QuasarConvoy.States
 
         public override void PostUpdate(GameTime gameTime)
         {
-            
+            for(int i=0;i<_sprites.Count;i++)
+            {
+                if (_sprites[i].IsRemoved)
+                {
+                    if (_sprites[i] is Ship)
+                    {
+                        _convoy.Remove((Ship)_sprites[i]);
+                        _enemies.Remove((Ship)_sprites[i]);
+                    }
+                    _sprites.RemoveAt(i);
+                    i--;
+                }
+            }
+            for (int i = 0; i < UI.Count; i++)
+            {
+                if (UI[i].IsRemoved)
+                {
+                    UI.RemoveAt(i);
+                    i--;
+                }
+            }
         }
     }
 }

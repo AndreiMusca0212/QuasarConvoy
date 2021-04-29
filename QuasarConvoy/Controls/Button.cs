@@ -31,7 +31,7 @@ namespace QuasarConvoy.Controls
 
         private int state, SoundLevel;
         
-        private string query = "SELECT SoundLevel FROM UserInfo WHERE ID = 1";
+        private string query = "SELECT SoundLevel FROM [User] WHERE ID = 1";
 
         #endregion
 

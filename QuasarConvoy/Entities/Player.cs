@@ -34,7 +34,7 @@ namespace QuasarConvoy.Entities
         public Ship ControlledShip { set; get; }
 
         #endregion
-        
+
         public Player(List<Ship> convoy)
         {
             ControlledShip = convoy[shipIndex];
@@ -42,14 +42,23 @@ namespace QuasarConvoy.Entities
 
         public void SwitchShip(List<Ship> convoy)
         {
-            if(Input.WasPressed(Input.NextShip,Keyboard.GetState()))
+            if(Input.WasPressed(Input.NextShip,Keyboard.GetState())||ControlledShip.IsRemoved)
             {
-                if (shipIndex >= convoy.Count-1)
-                    shipIndex = 0;
+                bool friendsExist = false;
+                for (int i = 0; i < convoy.Count; i++)
+                    if (convoy[i].Friendly==true)
+                        friendsExist = true;
+                if (friendsExist)
+                {
+                    if (shipIndex >= convoy.Count - 1)
+                        shipIndex = 0;
+                    else
+                        shipIndex++;
+                    ControlledShip.IsControlled = false;
+                    ControlledShip = convoy[shipIndex];
+                }
                 else
-                    shipIndex++;
-                ControlledShip.IsControlled = false;
-                ControlledShip = convoy[shipIndex];
+                    ControlledShip = null;
             }
         }
 

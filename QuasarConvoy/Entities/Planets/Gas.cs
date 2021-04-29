@@ -11,9 +11,10 @@ namespace QuasarConvoy.Entities.Planets
     {
         public Gas(ContentManager content):base(content)
         {
-            _sprite = new Sprite(content.Load<Texture2D>("GasGiant"));
+            _sprite = new PlanetSprite(content.Load<Texture2D>("GasGiant"));
             Type = "giant";
-            Size = 6f;
+            Size = 3f;
+            _sprite.renderDistance = (int)Size * 10000;
         }
     }
 }

@@ -70,7 +70,7 @@ namespace QuasarConvoy.Controls
 
             dBManager = _dBManager;
 
-            query = "SELECT iCount FROM UserInventory WHERE ItemName = '" + ItemName + "'";
+            query = "SELECT ItemCount FROM UserInventory WHERE ItemName = '" + ItemName + "'";
             count = int.Parse(_dBManager.SelectElement(query));
 
             texture = _contentManager.Load<Texture2D>("ItemFrames/" + ItemName);

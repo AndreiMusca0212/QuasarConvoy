@@ -11,9 +11,10 @@ namespace QuasarConvoy.Entities.Planets
     {
         public Dry(ContentManager content):base(content)
         {
-            _sprite = new Sprite(content.Load<Texture2D>("DessertPlanet"));
+            _sprite = new PlanetSprite(content.Load<Texture2D>("DessertPlanet"));
             Type = "dessert";
             Size = 1.2f;
+            _sprite.renderDistance = (int)Size * 10000;
         }
     }
 }

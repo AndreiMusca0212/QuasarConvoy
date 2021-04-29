@@ -7,15 +7,14 @@ using System.Text;
 
 namespace QuasarConvoy.Entities.Planets
 {
-    class Terran:Planet
+    class Star:Planet
     {
-        public Terran(ContentManager content) : base(content)
+        public Star(ContentManager content) : base(content)
         {
-            _sprite = new PlanetSprite(content.Load<Texture2D>("TerranPlanet"));
-            Type = "terran";
-            Size = 1f;
+            _sprite = new PlanetSprite(content.Load<Texture2D>("Sun"));
+            Type = "star";
+            Size = 4f;
             _sprite.renderDistance = (int)Size * 10000;
-            _sprite.Position = Position;
         }
     }
 }
