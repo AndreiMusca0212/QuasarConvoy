@@ -22,8 +22,9 @@ namespace QuasarConvoy
             string path = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.Parent.FullName;
             path = Path.Combine(path, fileName);*/
             //string connectionString = "Data Source = (LocalDB)\\MSSQLLocalDB; AttachDbFilename = " + path + "; Integrated Security = True"; 
-            string connectionString = "Data Source = (LocalDB)\\MSSQLLocalDB; AttachDbFilename ="+ Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.Parent.FullName + "\\QCdatabase.mdf; Integrated Security = True";
+            string connectionString = "Data Source = (LocalDB)\\MSSQLLocalDB; AttachDbFilename =" + Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.Parent.FullName + "\\QCdatabase.mdf; Integrated Security = True";
             connection = new SqlConnection(connectionString); //daca scriu asa merge 
+        }
 
         private bool OpenConnection()
         {
@@ -80,9 +81,28 @@ namespace QuasarConvoy
             return "";
         }
 
-        public List<string> SelectColumnFrom(string table, string column) //select one column in a list of string arrays
+        public List<string> SelectColumnFrom(string table, string column) //select one column in a list of strings
         {
             string query = "SELECT * FROM " + table;
+            List<string> data = new List<string>();
+
+            if (OpenConnection() == true)
+            {
+                SqlCommand _command = new SqlCommand(query, connection);
+                SqlDataReader dataReader = _command.ExecuteReader();
+                while (dataReader.Read())
+                    data.Add(dataReader[column] + "");
+
+                dataReader.Close();
+                CloseConnection();
+                return data;
+            }
+            else return null;
+        }
+
+        public List<string> SpecificSelectColumnFrom(string table, string column, string property, string propertyValue) //select one special column in a list of strings
+        {
+            string query = "SELECT * FROM " + table + " WHERE " + property + " = " + propertyValue;
             List<string> data = new List<string>();
 
             if (OpenConnection() == true)

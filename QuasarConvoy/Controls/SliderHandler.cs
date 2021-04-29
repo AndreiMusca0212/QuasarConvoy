@@ -25,7 +25,7 @@ namespace QuasarConvoy.Controls
         public SliderHandler(GraphicsDevice _graphicsDevice, ContentManager _contentManager, Rectangle sliderFrame)
         {
             dBManager = new DBManager();
-            query = "SELECT SoundLevel FROM UserInfo WHERE ID = 1";
+            query = "SELECT SoundLevel FROM [User] WHERE ID = 1";
             soundlevel = int.Parse(dBManager.SelectElement(query));
 
             font = _contentManager.Load<SpriteFont>("Fonts/Font");
@@ -64,7 +64,7 @@ namespace QuasarConvoy.Controls
             if (mouse.LeftButton == ButtonState.Released)
             {
                 soundlevel = (handlerFrame.X - _slideFrame.X) * 100 / _slideFrame.Width;
-                query = "UPDATE UserInfo SET SoundLevel = " + soundlevel + " WHERE ID = 1;";
+                query = "UPDATE [User] SET SoundLevel = " + soundlevel + " WHERE ID = 1;";
                 dBManager.QueryIUD(query);
             }
         }

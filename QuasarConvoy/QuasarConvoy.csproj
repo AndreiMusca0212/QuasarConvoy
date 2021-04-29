@@ -18,6 +18,11 @@
     <None Remove="QCdatabase.mdf" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="QCdatabase.mdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="Icon.ico" />
     <EmbeddedResource Include="Icon.bmp" />
   </ItemGroup>

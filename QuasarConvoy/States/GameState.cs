@@ -24,15 +24,9 @@ namespace QuasarConvoy.States
 
         private SpriteFont font;
 
-        struct element
-        {
-            public int x;
-            public int y;
-            public string value;
-        }
-        element currencyDisplay;
-        
-        
+        private string currency;
+        private Vector2 currencyPos;
+
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private int ver = 0;
@@ -66,17 +60,44 @@ namespace QuasarConvoy.States
             float width = _graphicsDevice.PresentationParameters.BackBufferWidth;
             float height = _graphicsDevice.PresentationParameters.BackBufferHeight;
 
-            Graphics = _graphicsDevice;
-            dBManager = new DBManager();
-            query = "SELECT Currency FROM UserInfo WHERE ID = 1";
-            int result = int.Parse(dBManager.SelectElement(query));
-            
             font = _contentManager.Load<SpriteFont>("Fonts/Font");
 
-            currencyDisplay = new element();
-            currencyDisplay.x = (int)(3 * width) / 4;
-            currencyDisplay.y = (int)(height / 16);
-            currencyDisplay.value = result + " CC";
+            Graphics = _graphicsDevice;
+            dBManager = new DBManager();
+            query = "SELECT Currency FROM [Saves] WHERE ID = 1";
+            long result = Convert.ToInt64(dBManager.SelectElement(query));
+
+            int key; string unitPrefix;
+            for (key = 0; key <= 6 && ((int)(result / Math.Pow(10, 3 * key)) != 0); key++) ;
+            key--;
+            switch (key)
+            {
+                case 1:
+                    unitPrefix = " k";
+                    break;
+                case 2:
+                    unitPrefix = " m";
+                    break;
+                case 3:
+                    unitPrefix = " b";
+                    break;
+                case 4:
+                    unitPrefix = " g";
+                    break;
+                case 5:
+                    unitPrefix = " t";
+                    break;
+                case 6:
+                    unitPrefix = " t";
+                    break;
+                default:
+                    unitPrefix = " ";
+                    break;
+            }
+            long putere = Convert.ToInt64(Math.Pow(10, 3 * key));
+            currency = (int)(result / putere) + unitPrefix + "CC";
+            currencyPos = new Vector2((int)(3 * width) / 4, (int)(height / 16));
+
             //_graphics = new GraphicsDeviceManager(this);
 
             LoadContent(_graphicsDevice,_contentManager);
@@ -167,11 +188,7 @@ namespace QuasarConvoy.States
             if (invActivated)
                 game.ChangeStates(new InventoryState(game, graphicsDevice, contentManager));
             previousInventoryState = currentInventoryState;
-            
 
-            query = "SELECT Currency FROM UserInfo WHERE ID = 1";
-            int result = int.Parse(dBManager.SelectElement(query));
-            currencyDisplay.value = result + " CC";
             //cleo upp
             
             //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -249,7 +266,7 @@ namespace QuasarConvoy.States
             _spriteBatch.End();
             _spriteBatch.Begin();
 
-            _spriteBatch.DrawString(font, currencyDisplay.value, new Vector2(currencyDisplay.x, currencyDisplay.y), Color.White);
+            _spriteBatch.DrawString(font, currency, currencyPos, Color.White);
 
             _spriteBatch.End();
 
