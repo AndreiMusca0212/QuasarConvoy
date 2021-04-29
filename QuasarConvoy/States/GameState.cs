@@ -324,9 +324,9 @@ namespace QuasarConvoy.States
             int j = 0;
             for(int i=1;i<_stations.Count;i++)
             {
-                if (_player.Distance(_stations[0].Position).Length() < dist)
+                if (_player.Distance(_stations[i].Position).Length() < dist)
                 {
-                    dist = _player.Distance(_stations[0].Position).Length();
+                    dist = _player.Distance(_stations[i].Position).Length();
                     j = i;
                 }
             }
