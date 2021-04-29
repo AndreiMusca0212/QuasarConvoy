@@ -13,58 +13,112 @@ namespace QuasarConvoy.States
     public class InventoryState : State
     {
         private DBManager dBManager;
-        private string query, location;
-        private int currency;
+        private string query;
+        private string currency;
+        private Vector2 currencyPos;
 
         private Texture2D techEffectTexture, inventoryBoxTexture;
         private Rectangle techEffectFrame, inventoryBoxFrame;
-        private Vector2 locationFrame, currencyFrame;
 
+        private List<Item>[] Rows, RowsSorted;
+        private int row1 = 0, row2 = 1;
+        private int itemCount;
 
-        private Button MSButton, CS1Button, CS2Button, CS3Button;
-        private Texture2D MStexture, CS1, CS2, CS3;
-        private int selectedInventory; // 0 1 2 3
+        private Button scrollUpButton, scrollDownButton, previousItemTypeButton, nextItemTypeButton;
+        private Texture2D scrollUp, scrollDown, previousItemType, nextItemType;
+        private float scale = 0.8f;
 
         private Texture2D itemMeasure;
+        private ItemPropsList itemPropsList;
+        private int itemDisplay = 5, previousItemDisplay = 6;
 
         SpriteFont font;
+        private List<string> ItemTypes, data;
+        private List<Component> components;
+        int width, height;
 
-        private List<Component> components, items;
+        public void Load(ContentManager _contentManager)
+        {
+            font = _contentManager.Load<SpriteFont>("Fonts/Font");
+            itemMeasure = _contentManager.Load<Texture2D>("ItemFrames/Dehydrated Water");
+            techEffectTexture = _contentManager.Load<Texture2D>("UI Stuff/Images/Inventory Tech Effect");
+            inventoryBoxTexture = _contentManager.Load<Texture2D>("UI Stuff/Inventory Box");
+            scrollUp = _contentManager.Load<Texture2D>("UI Stuff/ScrollUp");
+            scrollDown = _contentManager.Load<Texture2D>("UI Stuff/ScrollDown");
+            previousItemType = _contentManager.Load<Texture2D>("UI Stuff/previousShipButton");
+            nextItemType = _contentManager.Load<Texture2D>("UI Stuff/nextShipButton");
+        }
 
         public InventoryState(Game1 _game, GraphicsDevice _graphicsDevice, ContentManager _contentManager) : base(_game, _graphicsDevice, _contentManager)
         {
-            font = _contentManager.Load<SpriteFont>("Fonts/Font");
-            int width = _graphicsDevice.PresentationParameters.BackBufferWidth;
-            int height = _graphicsDevice.PresentationParameters.BackBufferHeight;
-            selectedInventory = 0;
+            Load(_contentManager);
+            width = _graphicsDevice.PresentationParameters.BackBufferWidth;
+            height = _graphicsDevice.PresentationParameters.BackBufferHeight;
 
-            itemMeasure = _contentManager.Load<Texture2D>("ItemFrames/Dehydrated Water");
-
-            techEffectTexture = _contentManager.Load<Texture2D>("UI Stuff/Images/Inventory Tech Effect");
             techEffectFrame = new Rectangle(0, 0, width, techEffectTexture.Height);
-
-            inventoryBoxTexture = _contentManager.Load<Texture2D>("UI Stuff/Inventory Box");
-            inventoryBoxFrame = new Rectangle(width / 15, 3 * techEffectFrame.Height / 2, width / 2 + inventoryBoxTexture.Width / 5,
+            inventoryBoxFrame = new Rectangle(width / 20, 3 * techEffectFrame.Height / 2, (int)(0.8f * itemMeasure.Width * 5 + 200),
                                             height - 2 * techEffectFrame.Height);
             
 
-            MStexture = _contentManager.Load<Texture2D>("UI Stuff/Buttons/MSInventory");
-            MSButton = new Button(MStexture, _contentManager)
+            scrollUpButton = new Button(scrollUp, _contentManager)
+            {
+                Position = new Vector2(inventoryBoxFrame.X + inventoryBoxFrame.Width - scrollUp.Width - 10, inventoryBoxFrame.Y + 10),
+            };
+            scrollUpButton.Click += ScrollUpButton_Click;
+
+            scrollDownButton = new Button(scrollDown, _contentManager)
+            {
+                Position = new Vector2(inventoryBoxFrame.X + inventoryBoxFrame.Width - scrollDown.Width - 10, inventoryBoxFrame.Y + inventoryBoxFrame.Height - scrollDown.Height - 10),
+            };
+            scrollDownButton.Click += ScrollDownButton_Click;
+
+            previousItemTypeButton = new Button(previousItemType, _contentManager)
             {
                 Position = new Vector2(inventoryBoxFrame.X + 5, inventoryBoxFrame.Y + 5),
             };
-            MSButton.Click += MSButton_Click;
+            previousItemTypeButton.Click += PreviousItemTypeButton_Click;
 
-            CS1 = _contentManager.Load<Texture2D>("UI Stuff/Buttons/ConvoyShip1");
-            CS1Button = new Button(CS1, _contentManager)
+            nextItemTypeButton = new Button(nextItemType, _contentManager)
             {
-                Position = new Vector2(MSButton.Position.X + MStexture.Width + 5, MSButton.Position.Y),
+                Position = new Vector2(previousItemTypeButton.Position.X + previousItemType.Width + 200, previousItemTypeButton.Position.Y),
             };
-            CS1Button.Click += CS1Button_Click;
-
-
+            nextItemTypeButton.Click += NextItemTypeButton_Click;
 
             dBManager = new DBManager();
+            
+            query = "SELECT Currency FROM [Saves] WHERE ID = 1";
+            long result = Convert.ToInt64(dBManager.SelectElement(query));
+            int key; string unitPrefix;
+            for (key = 0; key <= 6 && ((int)(result / Math.Pow(10, 3 * key)) != 0); key++) ;
+            key--;
+            switch (key)
+            {
+                case 1:
+                    unitPrefix = " k";
+                    break;
+                case 2:
+                    unitPrefix = " m";
+                    break;
+                case 3:
+                    unitPrefix = " b";
+                    break;
+                case 4:
+                    unitPrefix = " g";
+                    break;
+                case 5:
+                    unitPrefix = " t";
+                    break;
+                case 6:
+                    unitPrefix = " t";
+                    break;
+                default:
+                    unitPrefix = " ";
+                    break;
+            }
+            long putere = Convert.ToInt64(Math.Pow(10, 3 * key));
+            currency = (int)(result / putere) + unitPrefix + "CC";
+            currencyPos = new Vector2(width - techEffectTexture.Width / 8, techEffectTexture.Height / 6);
+
 
             /*query = "SELECT Planet FROM [User] WHERE ID = 1";
             location = dBManager.SelectElement(query);
@@ -77,58 +131,63 @@ namespace QuasarConvoy.States
             query = "DELETE FROM [UserInventory] WHERE ItemCount = 0";
             dBManager.QueryIUD(query);
 
-
-            List<string> data = dBManager.SelectColumnFrom("UserInventory", "ItemName");
-            int count = data.Count, contor1 = 0, contor2 = 0;
+            ItemTypes = dBManager.SelectColumnFrom("[ItemType]", "Label");
+            ItemTypes.Add("ALL ITEMS");
             /*
                 Now, for each item in the User's inventory, I will create a full profile
                 and I will display in the Inventory box the information he has access to, which would be:
                 
-                ItemName, Type, Rarity, AvgPrice, Quality, iCount
+                ItemName, Type, Rarity, AvgPrice, Quality, ItemCount
             */
-            items = new List<Component>();
-            foreach(string itemProps in data)
-            {
-                Item currentItem = new Item(_contentManager, itemProps, dBManager, 0.5f)
-                {
-                    Position = new Vector2(MSButton.Position.X + MStexture.Width * contor1, 
-                                        MSButton.Position.Y + MStexture.Height + itemMeasure.Height * contor2 + 5),
-                };
-                items.Add(currentItem);
 
-                contor1++;
-                if (contor1 == 3)
-                {
-                    contor1 = 0;
-                    contor2++;
-                }
+            data = dBManager.SelectColumnFrom("[UserInventory]", "ID");
+            itemCount = data.Count;
+
+            Rows = new List<Item>[10];
+            for (int i = 0; i <= itemCount / 5; i++)
+                Rows[i] = new List<Item>();
+            for(int i = 0; i < itemCount; i++)
+            {
+                int ID = int.Parse(data[i]);
+                Item currentItem = new Item(_contentManager, ID, dBManager, scale, 2) { Position = new Vector2()};
+                currentItem.Click += delegate(object sender, EventArgs e) { CurrentItem_Click(sender, e, ID); };
+                Rows[i / 5].Add(currentItem);
             }
 
+            
             components = new List<Component>()
             {
-                MSButton,
-                CS1Button,
+                scrollUpButton,
+                scrollDownButton,
+                previousItemTypeButton,
+                nextItemTypeButton,
             };
         }
 
+        
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             spriteBatch.Begin();
 
-            //Upper Tech Effect - Current User Location - Currency - Inventory Box
+            //Upper Tech Effect - Currency - Inventory Box
             spriteBatch.Draw(techEffectTexture, techEffectFrame, Color.White);
-            spriteBatch.DrawString(font, "Location: " + location, locationFrame, Color.White);
-            spriteBatch.DrawString(font, currency + " CC", currencyFrame, Color.White);
+            spriteBatch.DrawString(font, currency, currencyPos, Color.White);
             spriteBatch.Draw(inventoryBoxTexture, inventoryBoxFrame, Color.White);
+            spriteBatch.DrawString(font, ItemTypes[itemDisplay].Trim(), new Vector2(previousItemTypeButton.Position.X + (nextItemTypeButton.Position.X - previousItemTypeButton.Position.X - previousItemType.Width) / 2, previousItemTypeButton.Position.Y + previousItemType.Height / 3), Color.BlanchedAlmond);
 
             //Elements of InventoryState
             foreach (var component in components)
                 component.Draw(gameTime, spriteBatch);
 
             //The User's Inventory
-            foreach (var item in items)
+            foreach (Item item in RowsSorted[row1])
                 item.Draw(gameTime, spriteBatch);
+            foreach (Item item in RowsSorted[row2])
+                item.Draw(gameTime, spriteBatch);
+
+            if(itemPropsList != null)
+                itemPropsList.Draw(gameTime, spriteBatch);
 
             spriteBatch.End();
         }
@@ -162,39 +221,101 @@ namespace QuasarConvoy.States
             foreach (var component in components)
                 component.Update(gameTime);
 
-            //The User's Inventory
-            foreach (var item in items)
-                item.Update(gameTime);
-        
-            switch(selectedInventory)
+            if (previousItemDisplay != itemDisplay)
             {
-                case 1:
-                    break;
-                case 2:
-                    break;
-                case 3:
-                    break;
-                default:
-                    break;
+                previousItemDisplay = itemDisplay;
+
+                RowsSorted = new List<Item>[10];
+                for (int i = 0; i <= itemCount / 5; i++)
+                    RowsSorted[i] = new List<Item>();
+                int k = 0, number = 0;
+                foreach (List<Item> list in Rows)
+                {
+                    if (list == null) break;
+                    foreach (Item item in list)
+                    {
+                        query = "SELECT ItemID FROM [UserInventory] WHERE ID = " + item.ID;
+                        int id = int.Parse(dBManager.SelectElement(query));
+                        query = "SELECT ItemTypeID FROM [Items] WHERE ID = " + id;
+                        int typeID = int.Parse(dBManager.SelectElement(query));
+                        if (typeID == itemDisplay + 1 || itemDisplay == 5)
+                        {
+                            RowsSorted[k].Add(item); number++;
+                            if (number == 5)
+                            {
+                                k++;
+                                number = 0;
+                            }
+                        }
+                    }
+                }
             }
+
+            int itemInRowCount = 1;
+            foreach(Item item in RowsSorted[row1])
+            {
+                item.Position = new Vector2(inventoryBoxFrame.X + 10 * itemInRowCount +
+                    (int)(itemMeasure.Width * scale) * (itemInRowCount - 1), inventoryBoxFrame.Y +
+                    previousItemTypeButton.Rectangle.Height + 20);
+                itemInRowCount++;
+
+                item.Update(gameTime);
+            }
+
+            itemInRowCount = 1;
+            if(RowsSorted[row2] != null)
+                foreach (Item item in RowsSorted[row2])
+                {
+                    item.Position = new Vector2(inventoryBoxFrame.X + 10 * itemInRowCount +
+                        (int)(itemMeasure.Width * scale) * (itemInRowCount - 1), inventoryBoxFrame.Y +
+                        previousItemTypeButton.Rectangle.Height + 100 + (int)(itemMeasure.Height * scale));
+                    itemInRowCount++;
+
+                    item.Update(gameTime);
+                }
+
+            // Position = new Vector2(inventoryBoxFrame.X + 10 * itemInRowCount + (int)(itemMeasure.Width * scale) * (itemCount - 1),
+            //inventoryBoxFrame.Y + previousShipButton.Rectangle.Width + 10 * itemRow + (int)(itemMeasure.Width * scale) * (itemRow - 1))
         }
 
         //-----------------------------------------------------
-        private void MSButton_Click(object sender, EventArgs e)
+
+        private void CurrentItem_Click(object sender, EventArgs e, int id)
         {
-            selectedInventory = 0;
+            itemPropsList = new ItemPropsList(contentManager, id, dBManager) 
+            {
+                ListFrame = new Rectangle(inventoryBoxFrame.X + inventoryBoxFrame.Width + 40, inventoryBoxFrame.Y, width - inventoryBoxFrame.X - inventoryBoxFrame.Width - 40, inventoryBoxFrame.Height),
+            };
         }
-        private void CS1Button_Click(object sender, EventArgs e)
+
+        private void ScrollDownButton_Click(object sender, EventArgs e)
         {
-            selectedInventory = 1;
+            if (row2 != itemCount / 5 && RowsSorted[row2] != null)
+            {
+                row1 = row2;
+                row2++;
+            }
         }
-        private void CS3Button_Click(object sender, EventArgs e)
+
+        private void ScrollUpButton_Click(object sender, EventArgs e)
         {
-            selectedInventory = 2;
+            if(row1 != 0)
+            {
+                row2 = row1;
+                row1--;
+            }
         }
-        private void CS2Button_Click(object sender, EventArgs e)
+
+        private void NextItemTypeButton_Click(object sender, EventArgs e)
         {
-            selectedInventory = 3;
+            if (itemDisplay + 1 == 6) itemDisplay = 0;
+            else itemDisplay++;
+        }
+
+        private void PreviousItemTypeButton_Click(object sender, EventArgs e)
+        {
+            if (itemDisplay - 1 < 0) itemDisplay = 5;
+            else itemDisplay--;
         }
     }
 }

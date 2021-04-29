@@ -81,9 +81,28 @@ namespace QuasarConvoy
             return "";
         }
 
-        public List<string> SelectColumnFrom(string table, string column) //select one column in a list of string arrays
+        public List<string> SelectColumnFrom(string table, string column) //select one column in a list of strings
         {
             string query = "SELECT * FROM " + table;
+            List<string> data = new List<string>();
+
+            if (OpenConnection() == true)
+            {
+                SqlCommand _command = new SqlCommand(query, connection);
+                SqlDataReader dataReader = _command.ExecuteReader();
+                while (dataReader.Read())
+                    data.Add(dataReader[column] + "");
+
+                dataReader.Close();
+                CloseConnection();
+                return data;
+            }
+            else return null;
+        }
+
+        public List<string> SpecificSelectColumnFrom(string table, string column, string property, string propertyValue) //select one special column in a list of strings
+        {
+            string query = "SELECT * FROM " + table + " WHERE " + property + " = " + propertyValue;
             List<string> data = new List<string>();
 
             if (OpenConnection() == true)

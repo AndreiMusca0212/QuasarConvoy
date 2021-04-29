@@ -16,6 +16,7 @@ namespace QuasarConvoy.Controls
         #region Fields
 
         private SpriteFont font;
+        private int fontSize;
         private MouseState previousMouse, currentMouse;
 
         private Texture2D texture;
@@ -23,14 +24,10 @@ namespace QuasarConvoy.Controls
         private float scale = 1f;
 
         public string ItemName;
-        public string Type;
-        public string Rarity;
-        public bool Unlocked;
-        public string MaxDropRegion;
-        public string MinDropRegion;
-        public int AvgPrice;
+        public int ID, itemID;
+        private int planetID;
 
-        private int count;
+        public int count;
 
         private DBManager dBManager;
 
@@ -40,7 +37,7 @@ namespace QuasarConvoy.Controls
 
         #region Properties
 
-        public EventHandler Click;
+        public event EventHandler Click;
 
         public bool Clicked { get; private set; }
 
@@ -50,7 +47,7 @@ namespace QuasarConvoy.Controls
         {
             get
             {
-                return new Vector2(Rectangle.X, Rectangle.Y + Rectangle.Height + 5);
+                return new Vector2(Rectangle.X, Rectangle.Y + Rectangle.Height);
             }
         }
 
@@ -58,37 +55,109 @@ namespace QuasarConvoy.Controls
         {
             get
             {
-                return new Rectangle((int)Position.X, (int)Position.Y, texture.Width, texture.Height);
+                return new Rectangle((int)Position.X, (int)Position.Y, (int)(texture.Width * scale), (int)(texture.Height * scale));
             }
         }
 
         #endregion
-
-        public Item(ContentManager _contentManager, string _ItemName, DBManager _dBManager, float _scale)
+        private void Load(ContentManager _contentManager)
         {
-            ItemName = _ItemName;
+            query = "SELECT ItemCount FROM [UserInventory] WHERE ID = " + ID;
+            count = int.Parse(dBManager.SelectElement(query));
+
+            query = "SELECT ItemID FROM [UserInventory] WHERE ID = " + ID;
+            itemID = int.Parse(dBManager.SelectElement(query));
+
+            query = "SELECT Name from [Items] WHERE ID = " + itemID;
+            ItemName = dBManager.SelectElement(query);
+
+            texture = _contentManager.Load<Texture2D>("ItemFrames/" + ItemName);
+
+            switch(fontSize)
+            {
+                case 1:
+                    font = _contentManager.Load<SpriteFont>("Fonts/EvenSmallerFont");
+                    break;
+                case 2:
+                    font = _contentManager.Load<SpriteFont>("Fonts/SmallFont");
+                    break;
+                case 3:
+                    font = _contentManager.Load<SpriteFont>("Fonts/Font");
+                    break;
+            }
+            
+        }
+
+        public Item(ContentManager _contentManager, int _invItemID, DBManager _dBManager, float _scale, int _fontSize) // fontSize = 1 2 3
+        {
+            ID = _invItemID;
 
             dBManager = _dBManager;
+
+
+            scale = _scale;
+
+            fontSize = _fontSize;
+
+            Load(_contentManager);
+        }
+
+        private void Load2(ContentManager _contentManager)
+        {
+            query = "SELECT ItemID FROM [PlanetInventory] WHERE ID = " + ID;
+            itemID = int.Parse(dBManager.SelectElement(query));
+
+            query = "SELECT ItemCount FROM [PlanetInventory] WHERE ItemID = " + itemID + " AND PLanetID = " + planetID;
+            count = int.Parse(dBManager.SelectElement(query));
+
+            query = "SELECT Name from [Items] WHERE ID = " + itemID;
+            ItemName = dBManager.SelectElement(query);
 
             query = "SELECT ItemCount FROM UserInventory WHERE ItemName = '" + ItemName + "'";
             count = int.Parse(_dBManager.SelectElement(query));
 
+
             texture = _contentManager.Load<Texture2D>("ItemFrames/" + ItemName);
 
-            scale = scale;
+            switch (fontSize)
+            {
+                case 1:
+                    font = _contentManager.Load<SpriteFont>("Fonts/EvenSmallerFont");
+                    break;
+                case 2:
+                    font = _contentManager.Load<SpriteFont>("Fonts/SmallFont");
+                    break;
+                case 3:
+                    font = _contentManager.Load<SpriteFont>("Fonts/Font");
+                    break;
+            }
+        }
 
-            font = _contentManager.Load<SpriteFont>("Fonts/Font");
+        public Item(ContentManager _contentManager, DBManager _dBManager, int _ItemID, int _planetID, float _scale, int _fontSize)
+        {
+            planetID = _planetID;
+
+            dBManager = _dBManager;
+
+            //query = "SELECT ItemID FROM [PlanetInventory] WHERE ID = " + _ItemID;
+            ID = _ItemID;
+
+            scale = _scale;
+
+            fontSize = _fontSize;
+
+            Load2(_contentManager);
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(texture, Position, null, Color.White, 0, new Vector2(0, 0), scale, SpriteEffects.None, 0);
-            spriteBatch.DrawString(font, "Dehydrated Water x" + count, ItemNamePosition, Color.White);
+            spriteBatch.DrawString(font, ItemName + " x" + count, ItemNamePosition, Color.White);
         }
 
         public override void Update(GameTime gameTime)
         {
-            /*
+            
             previousMouse = currentMouse;
             currentMouse = Mouse.GetState();
 
@@ -97,7 +166,7 @@ namespace QuasarConvoy.Controls
             if (mouseRectangle.Intersects(Rectangle))
                 if (currentMouse.LeftButton == ButtonState.Released && previousMouse.LeftButton == ButtonState.Pressed)
                     Click?.Invoke(this, new EventArgs());
-            */  
+            
          }
     }
 }
