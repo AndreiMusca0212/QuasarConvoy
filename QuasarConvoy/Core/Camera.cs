@@ -10,7 +10,9 @@ namespace QuasarConvoy.Core
     public class Camera
     {
         public Matrix Transform { private set; get; }
+        public Matrix offset;
         public Sprite FollowedSprite { get; set; }
+        private float MaxZoom=2f;
         public float _zoom=1f;
         public float Zoom
         {
@@ -67,6 +69,10 @@ namespace QuasarConvoy.Core
                     zoomVelocity = 0f;
         }
 
+        public Vector2 ViewPortSize()
+        {
+            return new Vector2(Game1.ScreenWidth * (1/Zoom), Game1.ScreenHeight * (1/Zoom));
+        }
         public Matrix GetZoomScale()
         {
             return Matrix.CreateScale(Zoom, Zoom, 0);
@@ -78,7 +84,7 @@ namespace QuasarConvoy.Core
                     -target.Position.X - (target._texture.Width*target.scale / 2),
                     -target.Position.Y - (target._texture.Height * target.scale / 2),
                     0);
-            var offset = Matrix.CreateTranslation(
+            offset = Matrix.CreateTranslation(
                 Game1.ScreenWidth /( 2 * Zoom),
                 Game1.ScreenHeight / (2 * Zoom),
                 0);

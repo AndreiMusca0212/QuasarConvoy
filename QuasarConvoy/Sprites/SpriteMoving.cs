@@ -12,31 +12,18 @@ using QuasarConvoy.Models;
 
 namespace QuasarConvoy.Sprites
 {
-    class SpriteMoving:Sprite
+    public class SpriteMoving:Sprite
     {
-        public float rott;
-
+       
         public float Speed = 1f;
 
         public Vector2 Velocity;
 
         public float Angle { set; get; }
         protected float AngSpeed { set; get; }
-        protected float SpeedCap { set; get; }
+        public float SpeedCap { set; get; }
 
-        public float Rotation
-        {
-            set
-            {
-                rott = value;
-                while (rott > Math.PI)
-                    rott -= (float)Math.PI * 2;
-                while (rott < -1 * Math.PI)
-                    rott += (float)Math.PI * 2;
-            }
-
-            get { return rott; }
-        }
+        
 
         public Vector2 Distance(Vector2 dest)
         {
@@ -95,33 +82,39 @@ namespace QuasarConvoy.Sprites
                     Velocity = Vector2.Zero;
             }
         }
-        public void MoveTo(Vector2 destination, bool drift)
+        public bool IsTurnedTowards(Vector2 destination,float precision)
+        {
+            if (TrueAngle(Rotation, Angle) > precision)
+                return false;
+            return true;
+        }
+        public void TurnTowards(Vector2 destination,float precision)
         {
             Vector2 dist = new Vector2(this.Position.X - destination.X, this.Position.Y - destination.Y);
             Angle = (float)Math.Atan2(-dist.X, dist.Y);
+            if (!IsTurnedTowards(destination,precision))
+            {
+                if (TrueAngle(Rotation - AngSpeed, Angle) < TrueAngle(Rotation + AngSpeed, Angle))
+                    Rotation -= AngSpeed;
+                else
+                    Rotation += AngSpeed;
+            }
+        }
+        
+        public void MoveTo(Vector2 destination, bool drift)
+        {
+            
             //angle = (float)(Math.Acos(Vector2.Dot(dist,new Vector2(10*(float)Math.Cos(Rotation), 10 * (float)Math.Sin(Rotation))) / dist.Length()));
 
             if (drift)
             {
-                if (TrueAngle(Rotation, Angle) > 0.2)
-                {
-                    if (TrueAngle(Rotation - AngSpeed, Angle) < TrueAngle(Rotation + AngSpeed, Angle))
-                        Rotation -= AngSpeed;
-                    else
-                        Rotation += AngSpeed;
-                }
+                TurnTowards(destination,0.1f);
                 Forward();
             }
             else
             {
-                if (TrueAngle(Rotation, Angle) > 0.2)
-                {
-                    if (TrueAngle(Rotation - AngSpeed, Angle) < TrueAngle(Rotation + AngSpeed, Angle))
-                        Rotation -= AngSpeed;
-                    else
-                        Rotation += AngSpeed;
-                }
-                else
+                TurnTowards(destination,0.1f);
+                if(IsTurnedTowards(destination,0.1f))
                     Forward();
             }
 

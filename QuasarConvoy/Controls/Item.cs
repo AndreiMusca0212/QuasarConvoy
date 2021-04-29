@@ -94,6 +94,7 @@ namespace QuasarConvoy.Controls
 
             dBManager = _dBManager;
 
+
             scale = _scale;
 
             fontSize = _fontSize;
@@ -111,6 +112,10 @@ namespace QuasarConvoy.Controls
 
             query = "SELECT Name from [Items] WHERE ID = " + itemID;
             ItemName = dBManager.SelectElement(query);
+
+            query = "SELECT ItemCount FROM UserInventory WHERE ItemName = '" + ItemName + "'";
+            count = int.Parse(_dBManager.SelectElement(query));
+
 
             texture = _contentManager.Load<Texture2D>("ItemFrames/" + ItemName);
 

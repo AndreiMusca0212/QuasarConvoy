@@ -18,7 +18,8 @@ namespace QuasarConvoy.Entities.Ships
             SpeedCap = 4f;
             Speed = 0.1f;
             Origin = new Vector2(_texture.Width / 2, _texture.Height / 2);
-            MaxIntegrity = 200;
+            MaxIntegrity = 500;
+            Friendly = true;
             Integrity = MaxIntegrity;
         }
 

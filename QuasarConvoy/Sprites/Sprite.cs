@@ -17,9 +17,26 @@ namespace QuasarConvoy.Sprites
     {
         #region Fields
 
+        public float rott=0f;
+
         protected Vector2 _position;
 
-        public float scale = 4f;
+        public float scale = 1f;
+
+
+        public float Rotation
+        {
+            set
+            {
+                rott = value;
+                while (rott > Math.PI)
+                    rott -= (float)Math.PI * 2;
+                while (rott < -1 * Math.PI)
+                    rott += (float)Math.PI * 2;
+            }
+
+            get { return rott; }
+        }
         #endregion
 
         #region Properties
@@ -31,7 +48,7 @@ namespace QuasarConvoy.Sprites
             set {_position = value;}
         }
 
-        protected float Layer { set; get; }
+        public float Layer { set; get; }
 
         /*
         public virtual Rectangle Collisionbox
@@ -53,7 +70,7 @@ namespace QuasarConvoy.Sprites
                     Position,
                     new Rectangle(0,0,_texture.Width, _texture.Height),
                     Color.White,
-                    0f,
+                    Rotation,
                     Vector2.Zero,
                     scale,
                     SpriteEffects.None,
@@ -61,7 +78,21 @@ namespace QuasarConvoy.Sprites
                     );
         }
 
-        
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Vector2 origin)
+        {
+            if (_texture != null)
+                spriteBatch.Draw(_texture,
+                    Position,
+                    new Rectangle(0, 0, _texture.Width, _texture.Height),
+                    Color.White,
+                    Rotation,
+                    origin,
+                    scale,
+                    SpriteEffects.None,
+                    Layer
+                    );
+        }
+
 
         public Sprite(ContentManager Content)
         { }
@@ -69,6 +100,14 @@ namespace QuasarConvoy.Sprites
         public Sprite(Texture2D texture)
         {
             _texture = texture;
+        }
+
+        public Sprite(Sprite original)
+        {
+            _texture = original._texture;
+            scale = original.scale;
+            Rotation = original.Rotation;
+            Position = original.Position;
         }
         
         public virtual void Update(GameTime gametime, List<Sprite> sprites)

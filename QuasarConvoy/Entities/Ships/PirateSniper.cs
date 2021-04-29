@@ -10,30 +10,37 @@ using System.Text;
 
 namespace QuasarConvoy.Entities.Ships
 {
-    class Interceptor1:Ship
+    class PirateSniper : Ship
     {
+        private bool confirmedAttack;
+        private int damage = 80;
+        private float agroDistance;
+        private float campRange=30;
         private Ship target;
-        int agroDistance=300;
-        public Interceptor1(ContentManager content):base(content)
-        {
-            _texture = content.Load<Texture2D>("interceptor");
-            AngSpeed = 0.07f;
-            SpeedCap = 10f;//ideal 10f
-            Speed = 0.15f;
-            Origin = new Vector2(_texture.Width / 2, _texture.Height / 2);
-            MaxIntegrity = 200;
-            Integrity = MaxIntegrity;
-            Friendly = true;
-            ShootInterval = 0.2f;
-        }
 
+        public PirateSniper(ContentManager content) : base(content)
+        {
+            _texture = content.Load<Texture2D>("PirateSniper");
+            AngSpeed = 0.07f;
+            scale = 0.1f;
+            SpeedCap = 10f;//ideal 10f
+            Speed = 0.10f;
+            Stability = 0.04f;
+            Origin = new Vector2(_texture.Width / 2, _texture.Height / 2);
+            MaxIntegrity = 150;
+            Integrity = MaxIntegrity;
+            ShootInterval = 0.4f;
+            Friendly = false;
+            confirmedAttack = false;
+            agroDistance = 300;
+        }
         public override void Shoot()
         {
             if (shootTimer >= ShootInterval)
             {
                 if (CombatManager != null)
                 {
-                    CombatManager.AddProjectile(Position,0.2f,10, 20f, Rotation, this);
+                    CombatManager.AddProjectile(Position,0.8f,20, 40f, Rotation, this);
                 }
                 shootTimer = 0f;
             }
@@ -49,8 +56,8 @@ namespace QuasarConvoy.Entities.Ships
                 else
                     if (Distance(target.Position).Length() > agroDistance + 20)
                     Forward();
-                TurnTowards(target.Position,0.05f);
-                if (IsTurnedTowards(target.Position,0.05f))
+                TurnTowards(target.Position,0.2f);
+                if (IsTurnedTowards(target.Position,0.2f))
                     Shoot();
             }
         }
@@ -58,21 +65,18 @@ namespace QuasarConvoy.Entities.Ships
         public override void Update(GameTime gameTime, List<Sprite> sprites)
         {
             base.Update(gameTime, sprites);
-            if (!IsControlled)
+            if (target == null || target.IsRemoved)
             {
-                if (target == null || target.IsRemoved)
-                {
-                    if (blacklist.Count > 0)
-                        target = PickTargetClosest(blacklist);
-                    else target = null;
-                }
-                else
-                    HostileTowards(target);
-                if (target != null && !inCombat)
-                    inCombat = true;
-                if (target == null && inCombat)
-                    inCombat = false;
+                if (blacklist.Count > 0)
+                    target = PickTargetClosest(blacklist);
+                else target = null;
             }
+            else
+                HostileTowards(target);
+            if (target != null && !inCombat)
+                inCombat = true;
+            if (target == null && inCombat)
+                inCombat = false;
         }
     }
 }
