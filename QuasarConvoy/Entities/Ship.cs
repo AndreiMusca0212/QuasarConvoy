@@ -27,6 +27,8 @@ namespace QuasarConvoy.Entities
         public float Stability=0.04f;
         public bool inCombat=false;
 
+        public int ID;
+
         public CombatManager CombatManager = null;
         public Ship(ContentManager content):base(content)
         {

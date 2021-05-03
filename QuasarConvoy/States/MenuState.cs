@@ -92,7 +92,7 @@ namespace QuasarConvoy.States
         {
             beginTransitionFade = true;
             isTransitioning = true;
-            game.GameState = new GameState(game, graphicsDevice, contentManager);
+            game.GameState = new GameState(game, graphicsDevice, contentManager,1);
         }
         private void QuitButton_Click(object sender, EventArgs e)
         {

@@ -79,6 +79,8 @@ namespace QuasarConvoy.States
         private const float secondsToBeElapsed = 10;
         private float secondsElapsed = secondsToBeElapsed;
 
+        public int saveID;
+
         #region Getters
         public Vector2 GetPlayerPos()
         {
@@ -90,11 +92,12 @@ namespace QuasarConvoy.States
             return _player.ControlledShip.Rotation;
         }
         #endregion
-        public GameState(Game1 _game, GraphicsDevice _graphicsDevice, ContentManager _contentManager):base(_game,_graphicsDevice,_contentManager)
+        public GameState(Game1 _game, GraphicsDevice _graphicsDevice, ContentManager _contentManager, int save):base(_game,_graphicsDevice,_contentManager)
         {
             float width = _graphicsDevice.PresentationParameters.BackBufferWidth;
             float height = _graphicsDevice.PresentationParameters.BackBufferHeight;
 
+            saveID = save;
             font = _contentManager.Load<SpriteFont>("Fonts/Font");
 
             Graphics = _graphicsDevice;
@@ -163,18 +166,50 @@ namespace QuasarConvoy.States
 
             for(int i=1;i<=dBManager.SelectColumnFrom("[Planets]","ID").Count;i++)
             {
-                Planet plan = new Planet(contentManager.Load<Texture2D>(dBManager.SelectElement("SELECT Name FROM [Planets] WHERE ID=" + i.ToString())));
-                float X = float.Parse(dBManager.SelectElement("SELECT PositionX FROM [Planets] WHERE ID = " + i.ToString()));
-                float Y = float.Parse(dBManager.SelectElement("SELECT PositionY FROM [Planets] WHERE ID = " + i.ToString()));
-                plan.Position = new Vector2(X, Y);
-                plan.Size = float.Parse(dBManager.SelectElement("SELECT Size FROM [Planets] WHERE ID = " + i.ToString()));
-                plan.ID = i;
-                _planets.Add(plan);
+                if (int.Parse(dBManager.SelectElement("SELECT SaveID FROM [Planets] WHERE ID = " + i.ToString())) == saveID)
+                {
+                    Planet plan = new Planet(contentManager.Load<Texture2D>(dBManager.SelectElement("SELECT Name FROM [Planets] WHERE ID=" + i.ToString())));
+                    float X = float.Parse(dBManager.SelectElement("SELECT PositionX FROM [Planets] WHERE ID = " + i.ToString()));
+                    float Y = float.Parse(dBManager.SelectElement("SELECT PositionY FROM [Planets] WHERE ID = " + i.ToString()));
+                    plan.Position = new Vector2(X, Y);
+                    plan.Size = float.Parse(dBManager.SelectElement("SELECT Size FROM [Planets] WHERE ID = " + i.ToString()));
+                    plan.ID = i;
+                    _planets.Add(plan);
+                }
             }
 
             _stations = new List<TradeStation>();
 
             LoadContent(_graphicsDevice,_contentManager);
+        }
+
+        public Ship CreateShip(int model, float x, float y, float rot ,int id)
+        {
+            Ship ship = null;
+            switch(model)
+            {
+                case 1:
+                    {
+                        ship = new Interceptor1(contentManager)
+                        {
+                            CombatManager = _combatManager
+                        };
+                        break;
+                    }
+                case 2:
+                    {
+                        ship = new Mule1(contentManager);
+                        break;
+                    }
+                default:
+                    {
+                        break;
+                    }
+            }
+            ship.Position = new Vector2(x, y);
+            ship.Rotation = rot;
+            ship.ID = id;
+            return ship;
         }
 
         protected void LoadContent(GraphicsDevice graphicsDevice, ContentManager Content)
@@ -213,47 +248,18 @@ namespace QuasarConvoy.States
                     _stations.Add(new TradeStation(contentManager, plan));
             }
 
-            _convoy = new List<Ship>
+            _convoy = new List<Ship>();
+            for (int i = 1; i <= dBManager.SelectColumnFrom("[Ships]", "ID").Count; i++)
             {
-                new Interceptor1(Content)
+                if (int.Parse(dBManager.SelectElement("SELECT SaveID FROM [Ships] WHERE ID = " + i.ToString())) == saveID)
                 {
-                    Position=spawnPos+new Vector2(0,0),
-                    CombatManager=_combatManager,
-                    //Speed=5f,
-                    //SpeedCap=30f,
-                    
-                },
-                new Interceptor1(Content)
-                {
-                    Position=spawnPos+new Vector2(100,0),
-                    CombatManager=_combatManager,
-                    //Speed=5f,
-                    //SpeedCap=30f,
-
-                },
-                new Interceptor1(Content)
-                {
-                    Position=spawnPos+new Vector2(0,100),
-                    CombatManager=_combatManager,
-                    //Speed=5f,
-                    //SpeedCap=30f,
-
-                },
-                /*
-                new Mule1(Content)
-                {
-                    Position=spawnPos+new Vector2(100,100)
-                },
-                new Mule1(Content)
-                {
-                    Position=spawnPos+new Vector2(200,100)
-                },
-                new Mule1(Content)
-                {
-                    Position=spawnPos+new Vector2(300,100)
-                },*/
-                
-            };
+                    float X = float.Parse(dBManager.SelectElement("SELECT PositionX FROM [Ships] WHERE ID = " + i.ToString()));
+                    float Y = float.Parse(dBManager.SelectElement("SELECT PositionY FROM [Ships] WHERE ID = " + i.ToString()));
+                    float r = float.Parse(dBManager.SelectElement("SELECT Rotation FROM [Ships] WHERE ID = " + i.ToString()));
+                    int model = int.Parse(dBManager.SelectElement("SELECT ID_Model FROM [Ships] WHERE ID = " + i.ToString()));
+                    _convoy.Add(CreateShip(model, X, Y, r, i));
+                }
+            }
 
             _enemies = new List<Ship>()
             {

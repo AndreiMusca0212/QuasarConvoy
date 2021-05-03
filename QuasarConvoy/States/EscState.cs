@@ -21,10 +21,14 @@ namespace QuasarConvoy.States
 
         Slider soundSlider;
 
+        DBManager dBManager;
+
         public EscState(Game1 _game, GraphicsDevice _graphicsDevice, ContentManager _contentManager) : base(_game, _graphicsDevice, _contentManager)
         {
             float width = _graphicsDevice.PresentationParameters.BackBufferWidth;
             float height = _graphicsDevice.PresentationParameters.BackBufferHeight;
+
+            dBManager = new DBManager();
 
             font = _contentManager.Load<SpriteFont>("Fonts/Font");
             Message = _contentManager.Load<Texture2D>("UI Stuff/Images/EscMessage");
@@ -113,6 +117,10 @@ namespace QuasarConvoy.States
 
         private void SaveAndQuitButton_Click(object sender, EventArgs e)
         {
+            foreach(var ship in game.GameState._convoy)
+            {
+                dBManager.QueryIUD("UPDATE [Ships] SET PositionX = " + ship.Position.X.ToString() + ", PositionY = " + ship.Position.Y.ToString() + ", Rotation = " + ship.Rotation.ToString() + " WHERE ID = " + ship.ID.ToString());
+            }
             game.Exit();
         }
 
