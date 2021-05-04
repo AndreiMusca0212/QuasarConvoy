@@ -411,8 +411,13 @@ namespace QuasarConvoy.States
                 co.Update(gameTime);
             }
 
-            _player.Update(gameTime, _sprites, _convoy);
-            _camera.Update(_player.ControlledShip, _player.Input);
+            if (_convoy.Count == 0)
+                game.ChangeStates(new GameOverState(game, graphicsDevice, contentManager));
+            else
+            {
+                _player.Update(gameTime, _sprites, _convoy);
+                _camera.Update(_player.ControlledShip, _player.Input);
+            }
             EnterTrade();
             var timer = (float)gameTime.ElapsedGameTime.TotalSeconds;
             secondsElapsed -= timer;

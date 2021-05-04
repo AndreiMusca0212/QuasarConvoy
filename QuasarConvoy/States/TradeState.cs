@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using QuasarConvoy.Controls;
+using QuasarConvoy.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -222,10 +223,11 @@ namespace QuasarConvoy.States
         #region Update
         public override void Update(GameTime gameTime)
         {
-            KeyboardState keyboard = Keyboard.GetState();
-
-            if (keyboard.IsKeyDown(Keys.Escape))
+            Input Input = new Input(Keyboard.GetState());
+            if (Input.WasPressed(Keys.Escape))
+            {
                 game.ChangeStates(new GameState(game, graphicsDevice, contentManager));
+            }
 
             foreach (var component in components)
                 component.Update(gameTime);
