@@ -20,8 +20,9 @@ namespace QuasarConvoy.Managers
         Random random = new Random();
         public float DangerRangeUpperBound = 130000;
         public float DangerRangeLowerBound = 40000;
-        public double EncounterInterval=50;
+        public double EncounterInterval=100;
         double encounterTimer = 0f;
+        int lastCount = 0;
         public CombatManager(ContentManager con)
         {
             content = con;
@@ -183,7 +184,7 @@ namespace QuasarConvoy.Managers
             
             
         }
-        private Vector2 GenerateOutViewPosition(Camera cam)
+        public Vector2 GenerateOutViewPosition(Camera cam)
         {
             int opt=random.Next(1,5);
             Vector2 viewPort = cam.ViewPortSize();
@@ -234,6 +235,11 @@ namespace QuasarConvoy.Managers
         }
         public void Update(GameTime gameTime, Camera cam, List<Ship> ships, GameState game)
         {
+            if(game._convoy.Count!=lastCount)
+            {
+                lastCount = game._convoy.Count;
+                EncounterInterval = 150 * (1 / lastCount);
+            }
             foreach (var proj in projectiles)
             {
                 proj.Update(gameTime, cam);

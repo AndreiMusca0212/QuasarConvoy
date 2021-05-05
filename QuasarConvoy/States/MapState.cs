@@ -43,6 +43,11 @@ namespace QuasarConvoy.States
                 ps.scale = 0.02f;
                 sprites.Add(ps);
             }
+            sprites.Add(new Sprite(_game.GameState.shipYard._texture)
+            {
+                Position = _game.GameState.shipYard.Position * Game1.ScreenHeight / mapHeight + offset,
+                scale = 0.02f
+            });
             Sprite point = new Sprite(_contentManager.Load<Texture2D>("Pointer"))
             {
                 Position = game.GameState.GetPlayerPos() * Game1.ScreenHeight / mapHeight + offset,
@@ -55,7 +60,7 @@ namespace QuasarConvoy.States
                 sprites.Add(new Sprite(_contentManager.Load<Texture2D>("Pointer"))
                 {
                     Position = ship.Position,
-                    scale = 0.015f,
+                    scale = 0.01f,
                     Rotation = ship.Rotation
                 });
             }
