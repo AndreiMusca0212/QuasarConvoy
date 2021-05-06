@@ -106,6 +106,7 @@ namespace QuasarConvoy.States
 
             long result = Convert.ToInt64(dBManager.SelectElement(query));
 
+            
             int key; string unitPrefix;
             for (key = 0; key <= 6 && ((int)(result / Math.Pow(10, 3 * key)) != 0); key++) ;
             key--;
@@ -348,6 +349,7 @@ namespace QuasarConvoy.States
                     toolTipTradeVis = true;
                 if (Input.IsPressed(_player.Input.OpenTrade, Keyboard.GetState()))
                 {
+                    query = "UPDATE [Saves] SET X = " + _player.ControlledShip.Position.X + ", Y = " + _player.ControlledShip.Position.Y + " WHERE ID = " + saveID + ";";
                     game.ChangeStates(new TradeState(game, graphicsDevice, contentManager, GetClosestTrader().Home.ID));
                     Input.Refresh();
                 }

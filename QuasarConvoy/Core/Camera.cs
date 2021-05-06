@@ -13,7 +13,7 @@ namespace QuasarConvoy.Core
         public Matrix offset;
         public Sprite FollowedSprite { get; set; }
         private float MaxZoom=2f;
-        public float _zoom=1f;
+        public float _zoom=0.7f;
         public float Zoom
         {
             get {
