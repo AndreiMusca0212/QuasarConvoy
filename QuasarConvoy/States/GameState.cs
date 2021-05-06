@@ -152,16 +152,13 @@ namespace QuasarConvoy.States
 
             for(int i=1;i<=dBManager.SelectColumnFrom("[Planets]","ID").Count;i++)
             {
-                if (int.Parse(dBManager.SelectElement("SELECT SaveID FROM [Planets] WHERE ID = " + i.ToString())) == saveID)
-                {
-                    Planet plan = new Planet(contentManager.Load<Texture2D>(dBManager.SelectElement("SELECT Name FROM [Planets] WHERE ID=" + i.ToString())));
-                    float X = float.Parse(dBManager.SelectElement("SELECT PositionX FROM [Planets] WHERE ID = " + i.ToString()));
-                    float Y = float.Parse(dBManager.SelectElement("SELECT PositionY FROM [Planets] WHERE ID = " + i.ToString()));
-                    plan.Position = new Vector2(X, Y);
-                    plan.Size = float.Parse(dBManager.SelectElement("SELECT Size FROM [Planets] WHERE ID = " + i.ToString()));
-                    plan.ID = i;
-                    _planets.Add(plan);
-                }
+                Planet plan = new Planet(contentManager.Load<Texture2D>(dBManager.SelectElement("SELECT Name FROM [Planets] WHERE ID=" + i.ToString())));
+                float X = float.Parse(dBManager.SelectElement("SELECT PositionX FROM [Planets] WHERE ID = " + i.ToString()));
+                float Y = float.Parse(dBManager.SelectElement("SELECT PositionY FROM [Planets] WHERE ID = " + i.ToString()));
+                plan.Position = new Vector2(X, Y);
+                plan.Size = float.Parse(dBManager.SelectElement("SELECT Size FROM [Planets] WHERE ID = " + i.ToString()));
+                plan.ID = i;
+                _planets.Add(plan);
             }
 
             _stations = new List<TradeStation>();
@@ -268,9 +265,11 @@ namespace QuasarConvoy.States
                     _stations.Add(new TradeStation(contentManager, plan));
             }
 
+            int indContr = 0;
             _convoy = new List<Ship>();
             for (int i = 1; i <= dBManager.SelectColumnFrom("[Ships]", "ID").Count; i++)
             {
+                if(int.Parse(dBManager.SelectElement("SELECT COUNT(*) FROM [Ships] WHERE ID = " + i.ToString()))!=0)
                 if (int.Parse(dBManager.SelectElement("SELECT SaveID FROM [Ships] WHERE ID = " + i.ToString())) == saveID)
                 {
                     float X = float.Parse(dBManager.SelectElement("SELECT PositionX FROM [Ships] WHERE ID = " + i.ToString()));
@@ -280,13 +279,14 @@ namespace QuasarConvoy.States
                     _convoy.Add(CreateShip(model, X, Y, r, i));
                     if(i.ToString()==dBManager.SelectElement("SELECT ShipID FROM [Saves] Where ID = "+ saveID.ToString()))
                     {
-                        _player.ControlledShip = _convoy.Last<Ship>();
+                        indContr=_convoy.Count-1;
                     }
                 }
             }
 
             _enemies = new List<Ship>()
             {
+                /*
                 new PirateSniper(Content)
                 {
                     CombatManager=_combatManager,
@@ -321,7 +321,10 @@ namespace QuasarConvoy.States
 
             ver = 1;
 
-            _player = new Player(_convoy);
+            _player = new Player(_convoy)
+            {
+                ControlledShip = _convoy[indContr]
+            };
         }
 
         Input Input = new Input(Keyboard.GetState());
@@ -554,6 +557,7 @@ namespace QuasarConvoy.States
                     {
                         _convoy.Remove((Ship)_sprites[i]);
                         dBManager.QueryIUD("DELETE FROM [Ships] WHERE ID = " + ((Ship)_sprites[i]).ID);
+                        
                         _enemies.Remove((Ship)_sprites[i]);
                     }
                     _sprites.RemoveAt(i);

@@ -220,21 +220,31 @@ namespace QuasarConvoy.States
 
             if (eligibleForStart)
             {
-                query = "SELECT COUNT(*) FROM [User] WHERE UserName = '" + inputName + "'";
+                query = "SELECT COUNT(ID) FROM [User] WHERE UserName = '" + inputName + "'";
                 int check = int.Parse(dBManager.SelectElement(query));
                 if (check == 0)
                 {
-                    query = "INSERT INTO [User] VALUES ('" + inputName + "', 90, 0);";
+                    query = "INSERT INTO [User] (UserName,SoundLevel,HighScore) VALUES ('" + inputName + "', 90 , 0);";
                     dBManager.QueryIUD(query);
                 }
 
                 query = "SELECT ID FROM [User] WHERE UserName = '" + inputName + "'";
                 int result = int.Parse(dBManager.SelectElement(query));
-                query = "UPDATE [Saves] SET Currency = 100, X = 0, Y = 0, ShipID = 1, Name = '', Date = getdate(), UserID = " + result + " WHERE ID = 1;";
+                //query = "UPDATE [Saves] SET Currency = 100, X = 0, Y = 0, ShipID = 1, Name = '', Date = getdate(), UserID = " + result.ToString() + " WHERE ID = 1;";
+
+                query = "UPDATE [Saves] SET Currency = 5000, X = 21500, Y = -10700, ShipID = 1, Name = '', Date = getdate(), UserID = " + result.ToString() + " WHERE ID = 1;";
+                dBManager.QueryIUD(query);
+
+                if (int.Parse(dBManager.SelectElement("SELECT COUNT(*) FROM [Ships] WHERE ID = 1")) == 0)
+                    query = "INSERT INTO [Ships] (PositionX, PositionY, InConvoy, ID_Model, Rotation, SaveID) VALUES (21500 , -10700 , 1 , 1 , 0 , 1) ;";
+                    query = "UPDATE [Ships] SET PositionX = 21500, PositionY = -10700, InConvoy = 1, ID_Model = 1, Rotation = 0, SaveID = 1";
+                dBManager.QueryIUD(query);
+                query = "INSERT INTO [Ships] (PositionX, PositionY, InConvoy, ID_Model, Rotation, SaveID) VALUES (21600, -10700, 1, 2, 0, 1); ";
                 dBManager.QueryIUD(query);
                 query = "DELETE FROM [UserInventory];";
                 dBManager.QueryIUD(query);
-                game.ChangeStates(new GameState(game, graphicsDevice, contentManager, 1)); ;
+                game.GameState = new GameState(game, graphicsDevice, contentManager, 1);
+                game.ChangeStates(game.GameState);
             }
         }
 

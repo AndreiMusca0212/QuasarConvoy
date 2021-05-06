@@ -20,7 +20,7 @@ namespace QuasarConvoy.Managers
         Random random = new Random();
         public float DangerRangeUpperBound = 130000;
         public float DangerRangeLowerBound = 40000;
-        public double EncounterInterval=100;
+        public double EncounterInterval=150;
         double encounterTimer = 0f;
         int lastCount = 0;
         public CombatManager(ContentManager con)
@@ -238,7 +238,7 @@ namespace QuasarConvoy.Managers
             if(game._convoy.Count!=lastCount)
             {
                 lastCount = game._convoy.Count;
-                EncounterInterval = 150 * (1 / lastCount);
+                EncounterInterval = 150 / lastCount;
             }
             foreach (var proj in projectiles)
             {

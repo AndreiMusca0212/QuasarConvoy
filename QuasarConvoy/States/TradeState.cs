@@ -633,7 +633,7 @@ namespace QuasarConvoy.States
 
         private void TradeButton_Click(object sender, EventArgs e)
         {
-            if (userValue >= planetValue)
+            //if (userValue >= planetValue)
             {
                 List<Item> userInventory = new List<Item>();
                 List<Item> planetInventory = new List<Item>();

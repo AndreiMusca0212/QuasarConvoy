@@ -98,10 +98,12 @@ namespace QuasarConvoy.Entities
                 if (b.id!=0 && b.rectangle.Contains(playerPos.ToPoint()) && Input.WasPressed(Keys.F,Keyboard.GetState()))
                 {
                     Vector2 pos = gameState._combatManager.GenerateOutViewPosition(gameState.Camera);
+                    
                     dBManager.QueryIUD("INSERT INTO [Ships] (PositionX, PositionY, InConvoy, ID_Model, Rotation, SaveID) VALUES ( " + pos.X.ToString() + " , " + pos.Y.ToString() + " , 1 , " + b.id.ToString() + " , 0 , " + gameState.saveID.ToString() + " )");
                     int missing = -1;
                     for (int i = 1; i <= dBManager.SelectColumnFrom("[Ships]", "ID").Count; i++)
                     {
+                        if (int.Parse(dBManager.SelectElement("SELECT COUNT(*) FROM [Ships] WHERE ID = " + i.ToString())) != 0)
                         if (int.Parse(dBManager.SelectElement("SELECT SaveID FROM [Ships] WHERE ID = " + i.ToString())) == gameState.saveID)
                         {
                             int s = 0;
@@ -169,7 +171,7 @@ namespace QuasarConvoy.Entities
                 if (b.rectangle.Contains(playerPos.ToPoint()) && b.id!=0)
                 {
                     spriteBatch.DrawString(font,
-                        "Press F to buy \n" + b.description,
+                        "Press F to buy \n" + b.description + '\n' + b.price.ToString() + "CC",
                         playerPos,
                         Color.White,
                         0f,
