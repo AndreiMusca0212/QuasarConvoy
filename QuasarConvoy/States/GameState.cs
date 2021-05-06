@@ -75,9 +75,13 @@ namespace QuasarConvoy.States
 
         public List<TradeStation> _stations;
 
+        public ShipYard shipYard;
+
         public Vector2 spawnPos;
         private const float secondsToBeElapsed = 10;
         private float secondsElapsed = secondsToBeElapsed;
+
+        public int saveID;
 
         #region Getters
         public Vector2 GetPlayerPos()
@@ -89,12 +93,18 @@ namespace QuasarConvoy.States
         {
             return _player.ControlledShip.Rotation;
         }
+
+        public Ship GetControlledShip()
+        {
+            return _player.ControlledShip;
+        }
         #endregion
-        public GameState(Game1 _game, GraphicsDevice _graphicsDevice, ContentManager _contentManager):base(_game,_graphicsDevice,_contentManager)
+        public GameState(Game1 _game, GraphicsDevice _graphicsDevice, ContentManager _contentManager, int save):base(_game,_graphicsDevice,_contentManager)
         {
             float width = _graphicsDevice.PresentationParameters.BackBufferWidth;
             float height = _graphicsDevice.PresentationParameters.BackBufferHeight;
 
+            saveID = save;
             font = _contentManager.Load<SpriteFont>("Fonts/Font");
 
             Graphics = _graphicsDevice;
@@ -103,6 +113,7 @@ namespace QuasarConvoy.States
 
             long result = Convert.ToInt64(dBManager.SelectElement(query));
 
+            
             int key; string unitPrefix;
             for (key = 0; key <= 6 && ((int)(result / Math.Pow(10, 3 * key)) != 0); key++) ;
             key--;
@@ -137,29 +148,7 @@ namespace QuasarConvoy.States
 
             //_graphics = new GraphicsDeviceManager(this);
 
-            _planets = new List<Planet>
-            {/*
-                new Frost(_contentManager)
-                {
-                    Position=new Vector2(-41000,-54000)
-                },
-                new Terran(_contentManager)
-                {
-                    Position=new Vector2(21500,-10700)
-                },
-                new Gas(_contentManager)
-                {
-                    Position= new Vector2(5000, 55000)
-                },
-                new Dry(_contentManager)
-                {
-                    Position=new Vector2(-13000,-13000)
-                },
-                new Star(contentManager)
-                {
-                    Position=new Vector2(0,0)
-                }*/
-            };
+            _planets = new List<Planet>();
 
             for(int i=1;i<=dBManager.SelectColumnFrom("[Planets]","ID").Count;i++)
             {
@@ -174,7 +163,70 @@ namespace QuasarConvoy.States
 
             _stations = new List<TradeStation>();
 
+            shipYard = new ShipYard(contentManager, new Vector2(32000, 0));
+            
+            
             LoadContent(_graphicsDevice,_contentManager);
+        }
+
+        public Ship CreateShip(int model, float x, float y, float rot ,int id)
+        {
+            Ship ship = null;
+            switch(model)
+            {
+                case 1:
+                    {
+                        ship = new Interceptor1(contentManager)
+                        {
+                            CombatManager = _combatManager
+                        };
+                        break;
+                    }
+                case 2:
+                    {
+                        ship = new Mule1(contentManager);
+                        break;
+                    }
+                case 3:
+                    {
+                        ship = new Collector(contentManager)
+                        {
+                            CombatManager = _combatManager
+                        };
+                        break;
+                    }
+                case 4:
+                    {
+                        ship = new Elephant(contentManager);
+                        break;
+                    }
+                case 5:
+                    {
+                        ship = new Unicorn(contentManager);
+                        break;
+                    }
+                case 6:
+                    {
+                        ship = new PirateSniper(contentManager)
+                        {
+                            CombatManager = _combatManager
+                        };
+                        break;
+                    }
+                case 7:
+                    {
+                        ship = new PirateBrawler(contentManager);
+                        break;
+                    }
+                default:
+                    {
+                        break;
+                    }
+            }
+            ship.Position = new Vector2(x, y);
+            ship.Rotation = rot;
+            ship.ID = id;
+            return ship;
         }
 
         protected void LoadContent(GraphicsDevice graphicsDevice, ContentManager Content)
@@ -213,50 +265,28 @@ namespace QuasarConvoy.States
                     _stations.Add(new TradeStation(contentManager, plan));
             }
 
-            _convoy = new List<Ship>
+            int indContr = 0;
+            _convoy = new List<Ship>();
+            for (int i = 1; i <= dBManager.SelectColumnFrom("[Ships]", "ID").Count; i++)
             {
-                new Interceptor1(Content)
+                if(int.Parse(dBManager.SelectElement("SELECT COUNT(*) FROM [Ships] WHERE ID = " + i.ToString()))!=0)
+                if (int.Parse(dBManager.SelectElement("SELECT SaveID FROM [Ships] WHERE ID = " + i.ToString())) == saveID)
                 {
-                    Position=spawnPos+new Vector2(0,0),
-                    CombatManager=_combatManager,
-                    //Speed=5f,
-                    //SpeedCap=30f,
-                    
-                },
-                new Interceptor1(Content)
-                {
-                    Position=spawnPos+new Vector2(100,0),
-                    CombatManager=_combatManager,
-                    //Speed=5f,
-                    //SpeedCap=30f,
-
-                },
-                new Interceptor1(Content)
-                {
-                    Position=spawnPos+new Vector2(0,100),
-                    CombatManager=_combatManager,
-                    //Speed=5f,
-                    //SpeedCap=30f,
-
-                },
-                /*
-                new Mule1(Content)
-                {
-                    Position=spawnPos+new Vector2(100,100)
-                },
-                new Mule1(Content)
-                {
-                    Position=spawnPos+new Vector2(200,100)
-                },
-                new Mule1(Content)
-                {
-                    Position=spawnPos+new Vector2(300,100)
-                },*/
-                
-            };
+                    float X = float.Parse(dBManager.SelectElement("SELECT PositionX FROM [Ships] WHERE ID = " + i.ToString()));
+                    float Y = float.Parse(dBManager.SelectElement("SELECT PositionY FROM [Ships] WHERE ID = " + i.ToString()));
+                    float r = float.Parse(dBManager.SelectElement("SELECT Rotation FROM [Ships] WHERE ID = " + i.ToString()));
+                    int model = int.Parse(dBManager.SelectElement("SELECT ID_Model FROM [Ships] WHERE ID = " + i.ToString()));
+                    _convoy.Add(CreateShip(model, X, Y, r, i));
+                    if(i.ToString()==dBManager.SelectElement("SELECT ShipID FROM [Saves] Where ID = "+ saveID.ToString()))
+                    {
+                        indContr=_convoy.Count-1;
+                    }
+                }
+            }
 
             _enemies = new List<Ship>()
             {
+                /*
                 new PirateSniper(Content)
                 {
                     CombatManager=_combatManager,
@@ -291,7 +321,10 @@ namespace QuasarConvoy.States
 
             ver = 1;
 
-            _player = new Player(_convoy);
+            _player = new Player(_convoy)
+            {
+                ControlledShip = _convoy[indContr]
+            };
         }
 
         Input Input = new Input(Keyboard.GetState());
@@ -342,6 +375,7 @@ namespace QuasarConvoy.States
                     toolTipTradeVis = true;
                 if (Input.IsPressed(_player.Input.OpenTrade, Keyboard.GetState()))
                 {
+                    query = "UPDATE [Saves] SET X = " + _player.ControlledShip.Position.X + ", Y = " + _player.ControlledShip.Position.Y + " WHERE ID = " + saveID + ";";
                     game.ChangeStates(new TradeState(game, graphicsDevice, contentManager, GetClosestTrader().Home.ID));
                     Input.Refresh();
                 }
@@ -380,7 +414,7 @@ namespace QuasarConvoy.States
         public override void Update(GameTime gameTime)
         {
             StateControl();
-            query = "SELECT Currency FROM [Saves] WHERE ID = 1";
+            query = "SELECT Currency FROM [Saves] WHERE ID = " + saveID;
             int result = int.Parse(dBManager.SelectElement(query));
             currencyDisplay.value = result + " CC";
             //cleo upp
@@ -411,6 +445,8 @@ namespace QuasarConvoy.States
                 co.Update(gameTime);
             }
 
+            shipYard.Update(gameTime, _player.ControlledShip.Position, this, dBManager);
+
             if (_convoy.Count == 0)
                 game.ChangeStates(new GameOverState(game, graphicsDevice, contentManager));
             else
@@ -418,6 +454,7 @@ namespace QuasarConvoy.States
                 _player.Update(gameTime, _sprites, _convoy);
                 _camera.Update(_player.ControlledShip, _player.Input);
             }
+
             EnterTrade();
             var timer = (float)gameTime.ElapsedGameTime.TotalSeconds;
             secondsElapsed -= timer;
@@ -453,6 +490,7 @@ namespace QuasarConvoy.States
             //PlanetManager.Draw(gameTime, _spriteBatch);
             foreach (var st in _stations)
                 st.Draw(gameTime, _spriteBatch);
+            shipYard.Draw(gameTime, _spriteBatch,_player.ControlledShip.Position);
             foreach (var sprite in _sprites)
                 sprite.Draw(gameTime,_spriteBatch);
             foreach (var ship in _convoy)
@@ -516,6 +554,7 @@ namespace QuasarConvoy.States
 
         public override void PostUpdate(GameTime gameTime)
         {
+            
             for(int i=0;i<_sprites.Count;i++)
             {
                 if (_sprites[i].IsRemoved)
@@ -523,6 +562,8 @@ namespace QuasarConvoy.States
                     if (_sprites[i] is Ship)
                     {
                         _convoy.Remove((Ship)_sprites[i]);
+                        dBManager.QueryIUD("DELETE FROM [Ships] WHERE ID = " + ((Ship)_sprites[i]).ID);
+                        
                         _enemies.Remove((Ship)_sprites[i]);
                     }
                     _sprites.RemoveAt(i);

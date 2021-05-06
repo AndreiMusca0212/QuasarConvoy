@@ -183,10 +183,13 @@ namespace QuasarConvoy.States
                 component.Draw(gameTime, spriteBatch);
 
             //The User's Inventory
-            foreach (Item item in RowsSorted[row1])
-                item.Draw(gameTime, spriteBatch);
-            foreach (Item item in RowsSorted[row2])
-                item.Draw(gameTime, spriteBatch);
+            if(RowsSorted[row1]!= null)
+                foreach (Item item in RowsSorted[row1])
+                    item.Draw(gameTime, spriteBatch);
+            if (RowsSorted[row2] != null)
+                foreach (Item item in RowsSorted[row2])
+                    item.Draw(gameTime, spriteBatch);
+            
 
             if(itemPropsList != null)
                 itemPropsList.Draw(gameTime, spriteBatch);
@@ -254,15 +257,16 @@ namespace QuasarConvoy.States
             }
 
             int itemInRowCount = 1;
-            foreach(Item item in RowsSorted[row1])
-            {
-                item.Position = new Vector2(inventoryBoxFrame.X + 10 * itemInRowCount +
-                    (int)(itemMeasure.Width * scale) * (itemInRowCount - 1), inventoryBoxFrame.Y +
-                    previousItemTypeButton.Rectangle.Height + 20);
-                itemInRowCount++;
+            if (RowsSorted[row1] != null)
+                foreach (Item item in RowsSorted[row1])
+                {
+                    item.Position = new Vector2(inventoryBoxFrame.X + 10 * itemInRowCount +
+                        (int)(itemMeasure.Width * scale) * (itemInRowCount - 1), inventoryBoxFrame.Y +
+                        previousItemTypeButton.Rectangle.Height + 20);
+                    itemInRowCount++;
 
-                item.Update(gameTime);
-            }
+                    item.Update(gameTime);
+                }
 
             itemInRowCount = 1;
             if(RowsSorted[row2] != null)

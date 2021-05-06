@@ -12,8 +12,7 @@ namespace QuasarConvoy.Entities.Ships
 {
     class Interceptor1:Ship
     {
-        private Ship target;
-        int agroDistance=300;
+        int battleDistance = 300;
         public Interceptor1(ContentManager content):base(content)
         {
             _texture = content.Load<Texture2D>("interceptor");
@@ -25,6 +24,7 @@ namespace QuasarConvoy.Entities.Ships
             Integrity = MaxIntegrity;
             Friendly = true;
             ShootInterval = 0.2f;
+            agroDistance = 1000;
         }
 
         public override void Shoot()
@@ -42,12 +42,12 @@ namespace QuasarConvoy.Entities.Ships
         {
             if (target != null)
             {
-                if (Distance(target.Position).Length() < agroDistance - 20)
+                if (Distance(target.Position).Length() < battleDistance - 20)
                 {
                     BackWard();
                 }
                 else
-                    if (Distance(target.Position).Length() > agroDistance + 20)
+                    if (Distance(target.Position).Length() > battleDistance + 20)
                     Forward();
                 TurnTowards(target.Position,0.05f);
                 if (IsTurnedTowards(target.Position,0.05f))

@@ -24,8 +24,14 @@ namespace QuasarConvoy.Entities
         public int MaxIntegrity { set; get; }
         public bool Friendly { set; get; }
         public List<Ship> blacklist;
+
+        public Ship target;
         public float Stability=0.04f;
+
         public bool inCombat=false;
+        protected float agroDistance = 1000;
+
+        public int ID;
 
         public CombatManager CombatManager = null;
         public Ship(ContentManager content):base(content)
@@ -127,7 +133,7 @@ namespace QuasarConvoy.Entities
                 int indTarg = 0;
                 bool found = false;
                 for (int i = 0; i < ships.Count; i++)
-                    if (ships[i].Friendly != Friendly)
+                    if (ships[i].Friendly != Friendly && Distance(ships[i].Position).Length() < agroDistance)
                     {
                         if (Distance(ships[i].Position).Length() < Distance(ships[indTarg].Position).Length())
                         {

@@ -14,7 +14,7 @@ namespace QuasarConvoy.States
 
         protected ContentManager contentManager;
 
-        protected GraphicsDevice graphicsDevice;
+        public GraphicsDevice graphicsDevice;
 
         protected Game1 game;
 

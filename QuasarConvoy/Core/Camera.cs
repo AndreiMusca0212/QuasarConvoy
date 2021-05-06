@@ -13,7 +13,7 @@ namespace QuasarConvoy.Core
         public Matrix offset;
         public Sprite FollowedSprite { get; set; }
         private float MaxZoom=2f;
-        public float _zoom=1f;
+        public float _zoom=0.7f;
         public float Zoom
         {
             get {
@@ -80,10 +80,14 @@ namespace QuasarConvoy.Core
         public void Follow(Sprite target)
         {
             FollowedSprite = target;
-            var position = Matrix.CreateTranslation(
-                    -target.Position.X - (target._texture.Width*target.scale / 2),
-                    -target.Position.Y - (target._texture.Height * target.scale / 2),
-                    0);
+            var position = new Matrix();
+            if (target != null)
+                position = Matrix.CreateTranslation(
+                        -target.Position.X - (target._texture.Width * target.scale / 2),
+                        -target.Position.Y - (target._texture.Height * target.scale / 2),
+                        0);
+            else
+                position = Matrix.CreateTranslation(0, 0, 0);
             offset = Matrix.CreateTranslation(
                 Game1.ScreenWidth /( 2 * Zoom),
                 Game1.ScreenHeight / (2 * Zoom),

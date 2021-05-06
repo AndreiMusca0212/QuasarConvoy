@@ -14,9 +14,7 @@ namespace QuasarConvoy.Entities.Ships
     {
         private bool confirmedAttack;
         private int damage = 80;
-        private float agroDistance;
-        private Ship target;
-        
+        private int battleDistance;
         public PirateBrawler(ContentManager content) : base(content)
         {
             _texture = content.Load<Texture2D>("PirateBrawler");
@@ -30,7 +28,8 @@ namespace QuasarConvoy.Entities.Ships
             Integrity = MaxIntegrity;
             Friendly = false;
             confirmedAttack = false;
-            agroDistance = 500;
+            agroDistance = 1000;
+            battleDistance = 500;
         }
 
         Vector2 escapePos=Vector2.Zero;
@@ -51,7 +50,7 @@ namespace QuasarConvoy.Entities.Ships
                 else
                 {
                     MoveTo(escapePos, false);
-                    if (Distance(target.Position).Length() >= agroDistance)
+                    if (Distance(target.Position).Length() >= battleDistance)
                     {
                         confirmedAttack = false;
                     }

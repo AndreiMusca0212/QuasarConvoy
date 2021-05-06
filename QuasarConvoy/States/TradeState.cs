@@ -223,11 +223,11 @@ namespace QuasarConvoy.States
         #region Update
         public override void Update(GameTime gameTime)
         {
-            Input Input = new Input(Keyboard.GetState());
+
+            KeyboardState keyboard = Keyboard.GetState();
+
             if (Input.WasPressed(Keys.Escape))
-            {
-                game.ChangeStates(new GameState(game, graphicsDevice, contentManager));
-            }
+                game.ChangeStates(game.GameState);
 
             foreach (var component in components)
                 component.Update(gameTime);
@@ -634,7 +634,7 @@ namespace QuasarConvoy.States
 
         private void TradeButton_Click(object sender, EventArgs e)
         {
-            if (userValue >= planetValue)
+            //if (userValue >= planetValue)
             {
                 List<Item> userInventory = new List<Item>();
                 List<Item> planetInventory = new List<Item>();
