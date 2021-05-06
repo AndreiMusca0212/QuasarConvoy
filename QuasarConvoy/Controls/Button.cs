@@ -39,6 +39,8 @@ namespace QuasarConvoy.Controls
 
         public event EventHandler Click;
 
+        public bool activeButton { get; set; }
+
         public bool Clicked { get; private set; }
 
         public Color PenColor { get; set; }
@@ -77,6 +79,8 @@ namespace QuasarConvoy.Controls
             soundEffect = _content.Load<SoundEffect>("Sounds/ButtonTickSound_Zapsplat");
 
             state = 0;
+
+            activeButton = true;
         }
         public Button(Texture2D _texture, ContentManager _content)
         {
@@ -93,12 +97,14 @@ namespace QuasarConvoy.Controls
             soundEffect = _content.Load<SoundEffect>("Sounds/ButtonTickSound_Zapsplat");
 
             state = 0;
+
+            activeButton = true;
         }
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             Color color = Color.White;
 
-            if (isHovering)
+            if (isHovering && activeButton)
                 color = Color.Gray;
 
             if (scale == 1)
