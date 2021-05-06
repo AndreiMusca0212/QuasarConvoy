@@ -38,7 +38,10 @@ namespace QuasarConvoy.Entities
 
         public Player(List<Ship> convoy)
         {
-            ControlledShip = convoy[shipIndex];
+            if (convoy.Count > 0)
+                ControlledShip = convoy[shipIndex];
+            else
+                ControlledShip = null;
         }
 
         public void SwitchShip(List<Ship> convoy)

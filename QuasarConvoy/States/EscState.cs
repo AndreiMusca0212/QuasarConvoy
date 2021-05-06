@@ -121,6 +121,10 @@ namespace QuasarConvoy.States
             {
                 dBManager.QueryIUD("UPDATE [Ships] SET PositionX = " + ship.Position.X.ToString() + ", PositionY = " + ship.Position.Y.ToString() + ", Rotation = " + ship.Rotation.ToString() + " WHERE ID = " + ship.ID.ToString());
                 dBManager.QueryIUD("UPDATE [Saves] SET ShipID = " + game.GameState.GetControlledShip().ID.ToString());
+                int currentCurrency = int.Parse(dBManager.SelectElement("SELECT Currency FROM [Saves] WHERE ID = 1"));
+                string userid = (dBManager.SelectElement("SELECT UserID FROM [Saves] WHERE ID = 1"));
+                if (int.Parse(dBManager.SelectElement("SELECT HighScore FROM [User] Where ID = " + userid)) < currentCurrency)
+                    dBManager.QueryIUD("UPDATE [User] SET HighScore = " + currentCurrency.ToString());
             }
             game.Exit();
         }

@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using QuasarConvoy.Controls;
+using QuasarConvoy.Entities.Ships;
 using QuasarConvoy.Models;
 using System;
 using System.Collections.Generic;
@@ -52,10 +53,10 @@ namespace QuasarConvoy.States
             Load(_contentManager);
 
             dBManager = new DBManager();
-            query = "SELECT COUNT(*) FROM [Saves]";
+            query = "SELECT UserID FROM [Saves] WHERE ID = 1";
             int check = int.Parse(dBManager.SelectElement(query));
 
-            if (check != 0)
+            if (check != 1)
             {
                 activeGame = true;
                 game.GameState = new GameState(game, graphicsDevice, contentManager, 1);
@@ -235,14 +236,18 @@ namespace QuasarConvoy.States
                 query = "UPDATE [Saves] SET Currency = 5000, X = 21500, Y = -10700, ShipID = 1, Name = '', Date = getdate(), UserID = " + result.ToString() + " WHERE ID = 1;";
                 dBManager.QueryIUD(query);
 
-                if (int.Parse(dBManager.SelectElement("SELECT COUNT(*) FROM [Ships] WHERE ID = 1")) == 0)
-                    query = "INSERT INTO [Ships] (PositionX, PositionY, InConvoy, ID_Model, Rotation, SaveID) VALUES (21500 , -10700 , 1 , 1 , 0 , 1) ;";
-                    query = "UPDATE [Ships] SET PositionX = 21500, PositionY = -10700, InConvoy = 1, ID_Model = 1, Rotation = 0, SaveID = 1";
-                dBManager.QueryIUD(query);
-                query = "INSERT INTO [Ships] (PositionX, PositionY, InConvoy, ID_Model, Rotation, SaveID) VALUES (21600, -10700, 1, 2, 0, 1); ";
-                dBManager.QueryIUD(query);
+                dBManager.QueryIUD("DELETE FROM [Ships];");
+
                 query = "DELETE FROM [UserInventory];";
                 dBManager.QueryIUD(query);
+
+                dBManager.QueryIUD("DBCC CHECKIDENT ('Ships', RESEED, 0)");
+
+                query = "INSERT INTO [Ships] (PositionX, PositionY, InConvoy, ID_Model, Rotation, SaveID) VALUES (21500 , -10700 , 1 , 1 , 0 , 1)";
+                dBManager.QueryIUD(query);
+                query = "INSERT INTO [Ships] (PositionX, PositionY, InConvoy, ID_Model, Rotation, SaveID) VALUES (21600, -10700, 1, 2, 0, 1)";
+                dBManager.QueryIUD(query);
+
                 game.GameState = new GameState(game, graphicsDevice, contentManager, 1);
                 game.ChangeStates(game.GameState);
             }
