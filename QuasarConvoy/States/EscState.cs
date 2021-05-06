@@ -120,6 +120,7 @@ namespace QuasarConvoy.States
             foreach(var ship in game.GameState._convoy)
             {
                 dBManager.QueryIUD("UPDATE [Ships] SET PositionX = " + ship.Position.X.ToString() + ", PositionY = " + ship.Position.Y.ToString() + ", Rotation = " + ship.Rotation.ToString() + " WHERE ID = " + ship.ID.ToString());
+                dBManager.QueryIUD("UPDATE [Saves] SET ShipID = " + game.GameState.GetControlledShip().ID.ToString());
             }
             game.Exit();
         }

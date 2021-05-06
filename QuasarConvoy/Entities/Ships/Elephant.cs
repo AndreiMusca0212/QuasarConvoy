@@ -10,29 +10,27 @@ using System.Text;
 
 namespace QuasarConvoy.Entities.Ships
 {
-    class PirateBrawler : Ship
+    class Elephant:Ship
     {
+        public int damage = 100;
         private bool confirmedAttack;
-        private int damage = 80;
         private int battleDistance;
-        public PirateBrawler(ContentManager content) : base(content)
+        public Elephant(ContentManager contentManager):base(contentManager)
         {
-            _texture = content.Load<Texture2D>("PirateBrawler");
-            AngSpeed = 0.07f;
-            scale = 0.1f;
-            SpeedCap = 10f;//ideal 10f
-            Speed = 0.15f;
-            Stability = 0.04f;
+            _texture = contentManager.Load<Texture2D>("elephant");
+            AngSpeed = 0.05f;
+            SpeedCap = 6f;
+            Speed = 0.08f;
             Origin = new Vector2(_texture.Width / 2, _texture.Height / 2);
-            MaxIntegrity = 200;
+            MaxIntegrity = 700;
             Integrity = MaxIntegrity;
-            Friendly = false;
-            confirmedAttack = false;
-            agroDistance = 1000;
-            battleDistance = 500;
+            Friendly = true;
+            ShootInterval = 0.2f;
+            agroDistance = 400;
+            battleDistance = 100;
         }
 
-        Vector2 escapePos=Vector2.Zero;
+        Vector2 escapePos = Vector2.Zero;
         public override void HostileTowards(Ship target)
         {
             if (target != null)
@@ -66,13 +64,23 @@ namespace QuasarConvoy.Entities.Ships
         public override void Update(GameTime gameTime, List<Sprite> sprites)
         {
             base.Update(gameTime, sprites);
-            if (target == null||target.IsRemoved)
+            if (!IsControlled)
             {
-                if (blacklist.Count > 0)
-                    target = PickTargetClosest(blacklist);
+                if (target == null || target.IsRemoved)
+                {
+                    if (blacklist.Count > 0)
+                        target = PickTargetClosest(blacklist);
+                }
+                else
+                    HostileTowards(target);
+                if (target != null)
+                    if (Distance(target.Position).Length() > agroDistance)
+                        target = null;
+                if (target != null && !inCombat)
+                    inCombat = true;
+                if (target == null && inCombat)
+                    inCombat = false;
             }
-            else
-                HostileTowards(target);
         }
     }
 }

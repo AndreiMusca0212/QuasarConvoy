@@ -10,21 +10,22 @@ using System.Text;
 
 namespace QuasarConvoy.Entities.Ships
 {
-    class Interceptor1:Ship
+    class Collector:Ship
     {
         int battleDistance = 300;
-        public Interceptor1(ContentManager content):base(content)
+        
+        public Collector(ContentManager content):base(content)
         {
-            _texture = content.Load<Texture2D>("interceptor");
-            AngSpeed = 0.07f;
-            SpeedCap = 10f;//ideal 10f
-            Speed = 0.15f;
+            _texture = content.Load<Texture2D>("collector");
+            AngSpeed = 0.06f;
+            SpeedCap = 9f;//ideal 10f
+            Speed = 0.12f;
             Origin = new Vector2(_texture.Width / 2, _texture.Height / 2);
-            MaxIntegrity = 200;
+            MaxIntegrity = 300;
             Integrity = MaxIntegrity;
             Friendly = true;
-            ShootInterval = 0.2f;
-            agroDistance = 1000;
+            ShootInterval = 0.3f;
+            agroDistance = 500;
         }
 
         public override void Shoot()
@@ -33,11 +34,13 @@ namespace QuasarConvoy.Entities.Ships
             {
                 if (CombatManager != null)
                 {
-                    CombatManager.AddProjectile(Position,0.2f,10, 20f, Rotation, this);
+                    CombatManager.AddProjectile(Position + new Vector2((float)(20*Math.Cos(Rotation)), (float)(20 *Math.Sin(Rotation))), 0.2f, 4, 20f, Rotation, this);
+                    CombatManager.AddProjectile(Position - new Vector2((float)(20 * Math.Cos(Rotation)), (float)(20 * Math.Sin(Rotation))), 0.2f, 4, 20f, Rotation, this);
                 }
                 shootTimer = 0f;
             }
         }
+
         public override void HostileTowards(Ship target)
         {
             if (target != null)
@@ -49,8 +52,8 @@ namespace QuasarConvoy.Entities.Ships
                 else
                     if (Distance(target.Position).Length() > battleDistance + 20)
                     Forward();
-                TurnTowards(target.Position,0.05f);
-                if (IsTurnedTowards(target.Position,0.05f))
+                TurnTowards(target.Position, 0.05f);
+                if (IsTurnedTowards(target.Position, 0.05f))
                     Shoot();
             }
         }
@@ -68,6 +71,9 @@ namespace QuasarConvoy.Entities.Ships
                 }
                 else
                     HostileTowards(target);
+                if (target !=null)
+                    if(Distance(target.Position).Length() > agroDistance)
+                        target = null;
                 if (target != null && !inCombat)
                     inCombat = true;
                 if (target == null && inCombat)
