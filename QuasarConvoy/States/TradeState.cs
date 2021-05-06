@@ -223,6 +223,7 @@ namespace QuasarConvoy.States
         #region Update
         public override void Update(GameTime gameTime)
         {
+
             KeyboardState keyboard = Keyboard.GetState();
 
             if (Input.WasPressed(Keys.Escape))

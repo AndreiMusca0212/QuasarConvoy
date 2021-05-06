@@ -88,7 +88,7 @@ namespace QuasarConvoy.States
             dBManager = new DBManager();
             
             query = "SELECT Currency FROM [Saves] WHERE ID = 1";
-            long result = Convert.ToInt64(dBManager.SelectElement(query));
+            long result = Convert.ToInt64(dBManager.SelectElement(query));/*
             int key; string unitPrefix;
             for (key = 0; key <= 6 && ((int)(result / Math.Pow(10, 3 * key)) != 0); key++) ;
             key--;
@@ -117,7 +117,8 @@ namespace QuasarConvoy.States
                     break;
             }
             long putere = Convert.ToInt64(Math.Pow(10, 3 * key));
-            currency = (int)(result / putere) + unitPrefix + "CC";
+            currency = (int)(result / putere) + unitPrefix + " CC";*/
+            //currency = result + " CC";
             currencyPos = new Vector2(width - techEffectTexture.Width / 8, techEffectTexture.Height / 6);
 
 
@@ -127,7 +128,7 @@ namespace QuasarConvoy.States
 
             query = "SELECT Currency FROM [Saves] WHERE ID = 1";
             currency = dBManager.SelectElement(query);
-            currencyFrame = new Vector2(width - techEffectTexture.Width / 10, techEffectTexture.Height / 5);
+            //currencyFrame = new Vector2(width - techEffectTexture.Width / 10, techEffectTexture.Height / 5);
 
             query = "DELETE FROM [UserInventory] WHERE ItemCount = 0";
             dBManager.QueryIUD(query);
@@ -173,7 +174,7 @@ namespace QuasarConvoy.States
 
             //Upper Tech Effect - Currency - Inventory Box
             spriteBatch.Draw(techEffectTexture, techEffectFrame, Color.White);
-            spriteBatch.DrawString(font, currency, currencyPos, Color.White);
+            spriteBatch.DrawString(font, currency + " CC", currencyPos, Color.White);
             spriteBatch.Draw(inventoryBoxTexture, inventoryBoxFrame, Color.White);
             spriteBatch.DrawString(font, ItemTypes[itemDisplay].Trim(), new Vector2(previousItemTypeButton.Position.X + (nextItemTypeButton.Position.X - previousItemTypeButton.Position.X - previousItemType.Width) / 2, previousItemTypeButton.Position.Y + previousItemType.Height / 3), Color.BlanchedAlmond);
 
