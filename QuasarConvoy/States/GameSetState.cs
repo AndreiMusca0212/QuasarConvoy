@@ -190,7 +190,10 @@ namespace QuasarConvoy.States
 
         private void LoadGameButton_Click(object sender, EventArgs e)
         {
-            if(game.GameState != null)
+            query = "SELECT Currency FROM [Saves] WHERE ID = 1";
+            int result = int.Parse(dBManager.SelectElement(query));
+
+            if(game.GameState != null && result > 0)
                 game.ChangeStates(game.GameState);
         }
 
@@ -212,7 +215,10 @@ namespace QuasarConvoy.States
 
             bool eligibleForStart = false;
 
-            if (restartCheck == 0)
+            query = "SELECT Currency FROM [Saves] WHERE ID = 1";
+            int _result = int.Parse(dBManager.SelectElement(query));
+
+            if (restartCheck == 0 && _result > 0)
             {
                 message2 = "Found unfinished game activity on this device.\nDo you wish to restart? Press again if yes.";
                 restartCheck++;
@@ -236,10 +242,10 @@ namespace QuasarConvoy.States
                 query = "UPDATE [Saves] SET Currency = 5000, X = 21500, Y = -10700, ShipID = 1, Name = '', Date = getdate(), UserID = " + result.ToString() + " WHERE ID = 1;";
                 dBManager.QueryIUD(query);
 
-                dBManager.QueryIUD("DELETE FROM [Ships];");
-
                 query = "DELETE FROM [UserInventory];";
                 dBManager.QueryIUD(query);
+
+                dBManager.QueryIUD("DELETE FROM [Ships];");
 
                 dBManager.QueryIUD("DBCC CHECKIDENT ('Ships', RESEED, 0)");
 

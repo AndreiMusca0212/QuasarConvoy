@@ -238,7 +238,8 @@ namespace QuasarConvoy.Managers
             if(game._convoy.Count!=lastCount)
             {
                 lastCount = game._convoy.Count;
-                EncounterInterval = 150 / lastCount;
+                if(lastCount != 0)
+                    EncounterInterval = 150 / lastCount;
             }
             foreach (var proj in projectiles)
             {

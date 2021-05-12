@@ -113,7 +113,7 @@ namespace QuasarConvoy.States
 
             long result = Convert.ToInt64(dBManager.SelectElement(query));
 
-            
+            /*
             int key; string unitPrefix;
             for (key = 0; key <= 6 && ((int)(result / Math.Pow(10, 3 * key)) != 0); key++) ;
             key--;
@@ -141,8 +141,8 @@ namespace QuasarConvoy.States
                     unitPrefix = " ";
                     break;
             }
-            long putere = Convert.ToInt64(Math.Pow(10, 3 * key));
-            currency = (int)(result / putere) + unitPrefix + "CC";
+            long putere = Convert.ToInt64(Math.Pow(10, 3 * key));*/
+            currency = result + " CC";
             currencyPos = new Vector2((int)(3 * width) / 4, (int)(height / 16));
 
 
@@ -321,10 +321,11 @@ namespace QuasarConvoy.States
 
             ver = 1;
 
-            _player = new Player(_convoy)
-            {
-                ControlledShip = _convoy[indContr]
-            };
+            if(_convoy.Count != 0)
+                _player = new Player(_convoy)
+                {
+                    ControlledShip = _convoy[indContr]
+                };
         }
 
         Input Input = new Input(Keyboard.GetState());

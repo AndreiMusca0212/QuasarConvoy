@@ -26,8 +26,22 @@ namespace QuasarConvoy.States
             font = _contentManager.Load<SpriteFont>("Fonts/Font");
 
             dBManager = new DBManager();
-            query = "SELECT CURRENCY FROM [SAVES] WHERE ID = 1";
-            score = dBManager.SelectElement(query) + " CC";
+            query = "SELECT Currency FROM [Saves] WHERE ID = 1";
+            int score = int.Parse(dBManager.SelectElement(query));
+
+            query = "SELECT UserID FROM [Saves] WHERE ID = 1";
+            int id = int.Parse(dBManager.SelectElement(query));
+
+            query = "SELECT HighScore FROM [User] WHERE ID = " + id;
+            int high = int.Parse(dBManager.SelectElement(query));
+            if (high < score)
+            {
+                query = "UPDATE [User] SET HighScore = " + score + "WHERE ID = " + id + ";";
+                dBManager.QueryIUD(query);
+            }
+
+            query = "UPDATE [Saves] SET Currency = 0, X = 0, Y = 0;";
+            dBManager.QueryIUD(query);
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
@@ -35,7 +49,7 @@ namespace QuasarConvoy.States
             spriteBatch.Begin();
 
             spriteBatch.DrawString(font, message, new Vector2(width / 3, height / 2 - 30), Color.White);
-            spriteBatch.DrawString(font, "Score: " + score, new Vector2(width / 3, height / 2), Color.White);
+            spriteBatch.DrawString(font, "Score: " + score + " CC", new Vector2(width / 3, height / 2), Color.White);
 
             spriteBatch.End();
         }

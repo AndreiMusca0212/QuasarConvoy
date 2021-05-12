@@ -38,6 +38,8 @@ namespace QuasarConvoy.States
         private List<Component> components;
         int width, height;
 
+        private int maxItemCount, currentItemCount;
+
         public void Load(ContentManager _contentManager)
         {
             font = _contentManager.Load<SpriteFont>("Fonts/Font");
@@ -120,7 +122,6 @@ namespace QuasarConvoy.States
             currency = (int)(result / putere) + unitPrefix + " CC";*/
             //currency = result + " CC";
             currencyPos = new Vector2(width - techEffectTexture.Width / 8, techEffectTexture.Height / 6);
-
 
             /*query = "SELECT Planet FROM [User] WHERE ID = 1";
             location = dBManager.SelectElement(query);

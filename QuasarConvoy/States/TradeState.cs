@@ -14,6 +14,10 @@ namespace QuasarConvoy.States
     {
         private SpriteFont font, midFont;
 
+        //private int capacity, maxCapacity;
+
+        private long userCurrency;
+
         private Texture2D textureBar, InventoryBox, TransactionInventoryBox, tradeButtonTexture, itemMeasure;
         private Rectangle textureBarFrame, userInventoryBoxFrame, planetInventoryBoxFrame, userTransactionFrame, planetTransactionFrame;
 
@@ -31,6 +35,8 @@ namespace QuasarConvoy.States
         private string query;
         private int planetID;
 
+
+        private bool invalidMessage = false;
         float width, height;
 
         private int userItemCount, planetItemCount, userRow1 = 0, userRow2 = 1, planetRow1 = 0, planetRow2 = 1;
@@ -83,6 +89,8 @@ namespace QuasarConvoy.States
 
             dBManager = new DBManager();
             query = "SELECT Currency FROM [Saves] WHERE ID = 1";
+            userCurrency = int.Parse(dBManager.SelectElement(query));
+            /*
             long result = long.Parse(dBManager.SelectElement(query));
             int key; string unitPrefix;
             for (key = 0; key <= 6 && ((int)(result / Math.Pow(10, 3 * key)) != 0); key++) ;
@@ -113,9 +121,22 @@ namespace QuasarConvoy.States
             }
             long putere = Convert.ToInt64(Math.Pow(10, 3 * key));
             currency = (int)(result / putere) + unitPrefix + "CC";
+            */
+            currency = userCurrency + " CC";
             currencyPos = new Vector2(width / 25, textureBarFrame.Y);
 
             //---------------------------------------------------------
+
+            /*
+            query = "SELECT COUNT(*) FROM [UserInventory]";
+            capacity = int.Parse(dBManager.SelectElement(query));
+
+            List<string> ids = dBManager.SelectColumnFrom("[Ships]", "ID_Model");
+            foreach(string id in ids)
+            {
+
+            }
+            */
 
             query = "DELETE FROM [UserInventory] WHERE ItemCount = 0";
             dBManager.QueryIUD(query);
@@ -186,6 +207,9 @@ namespace QuasarConvoy.States
                                     currencyScrollUpTexture.Width + 10, currencyScrollUp.Position.Y + 10), Color.White);
             spriteBatch.DrawString(font, planetCurrencyValue + " CC", new Vector2(planetTransactionFrame.X +
                                 3 * planetTransactionFrame.Width / 4, currencyScrollUp.Position.Y + 10), Color.White);
+
+            if (invalidMessage)
+                spriteBatch.DrawString(font, "Invalid trade.", new Vector2(currencyPos.X + 150, currencyPos.Y), Color.Red);
 
             foreach (var component in components)
                 component.Draw(gameTime, spriteBatch);
@@ -451,7 +475,118 @@ namespace QuasarConvoy.States
                 item.count--;
                 query = "SELECT AvgPrice FROM [Items] WHERE ID = " + item.itemID;
                 int result = int.Parse(dBManager.SelectElement(query));
-                userValue += result;
+
+                query = "SELECT PlanetID FROM [Items] WHERE ID = " + item.itemID;
+                int id = int.Parse(dBManager.SelectElement(query));
+
+                float buff = 0f;
+                switch(id)
+                {
+                    case 1:
+                        switch(planetID)
+                        {
+                            case 1: buff -= 0.5f;
+                                break;
+                            case 2: buff += 0.2f;
+                                break;
+                            case 3: buff += 0.3f;
+                                break;
+                            case 4: buff -= 0.1f;
+                                break;
+                            case 5: buff += 0.2f;
+                                break;
+                            case 6: buff -= 0.3f;
+                                break;
+                        }
+                        break;
+                    case 2:
+                        switch (planetID)
+                        {
+                            case 1: buff += 0.2f;
+                                break;
+                            case 2: buff -= 0.5f;
+                                break;
+                            case 3: buff += 0.1f;
+                                break;
+                            case 4: buff -= 0.3f;
+                                break;
+                            case 5: buff += 0.4f;
+                                break;
+                            case 6: buff += 0.1f;
+                                break;
+                        }
+                        break;
+                    case 3:
+                        switch (planetID)
+                        {
+                            case 1: buff += 0.3f;
+                                break;
+                            case 2: buff += 0.2f;
+                                break;
+                            case 3: buff -= 0.5f;
+                                break;
+                            case 4: buff += 0.1f;
+                                break;
+                            case 5: buff -= 0.3f;
+                                break;
+                            case 6: buff -= 0.2f;
+                                break;
+                        }
+                        break;
+                    case 4:
+                        switch (planetID)
+                        {
+                            case 1: buff += 0.3f;
+                                break;
+                            case 2: buff += 0.1f;
+                                break;
+                            case 3: buff -= 0.2f;
+                                break;
+                            case 4: buff -= 0.5f;
+                                break;
+                            case 5: buff += 0.1f;
+                                break;
+                            case 6: buff += 0.2f;
+                                break;
+                        }
+                        break;
+                    case 5:
+                        switch (planetID)
+                        {
+                            case 1: buff -= 0.3f;
+                                break;
+                            case 2: buff += 0.2f;
+                                break;
+                            case 3: buff -= 0.1f;
+                                break;
+                            case 4: buff += 0.2f;
+                                break;
+                            case 5: buff -= 0.5f;
+                                break;
+                            case 6: buff += 0.1f;
+                                break;
+                        }
+                        break;
+                    case 6:
+                        switch (planetID)
+                        {
+                            case 1: buff += 0.1f;
+                                break;
+                            case 2: buff -= 0.2f;
+                                break;
+                            case 3: buff -= 0.3f;
+                                break;
+                            case 4: buff += 0.3f;
+                                break;
+                            case 5: buff += 0.2f;
+                                break;
+                            case 6: buff -= 0.5f;
+                                break;
+                        }
+                        break;
+                }
+
+                userValue += (int)(result * (id + buff));
                 altaVariabilaimDead = true; 
             }
 
@@ -517,7 +652,148 @@ namespace QuasarConvoy.States
                 item.count--;
                 query = "SELECT AvgPrice FROM [Items] WHERE ID = " + item.itemID;
                 int result = int.Parse(dBManager.SelectElement(query));
-                planetValue += result;
+
+                query = "SELECT PlanetID FROM [Items] WHERE ID = " + item.itemID;
+                int id = int.Parse(dBManager.SelectElement(query));
+
+                float buff = 0f;
+                switch (id)
+                {
+                    case 1:
+                        switch (planetID)
+                        {
+                            case 1:
+                                break;
+                            case 2:
+                                buff -= 0.2f;
+                                break;
+                            case 3:
+                                buff -= 0.3f;
+                                break;
+                            case 4:
+                                buff += 0.1f;
+                                break;
+                            case 5:
+                                buff -= 0.2f;
+                                break;
+                            case 6:
+                                buff += 0.3f;
+                                break;
+                        }
+                        break;
+                    case 2:
+                        switch (planetID)
+                        {
+                            case 1:
+                                buff -= 0.2f;
+                                break;
+                            case 2:
+                                break;
+                            case 3:
+                                buff -= 0.1f;
+                                break;
+                            case 4:
+                                buff += 0.3f;
+                                break;
+                            case 5:
+                                buff -= 0.4f;
+                                break;
+                            case 6:
+                                buff -= 0.1f;
+                                break;
+                        }
+                        break;
+                    case 3:
+                        switch (planetID)
+                        {
+                            case 1:
+                                buff -= 0.3f;
+                                break;
+                            case 2:
+                                buff -= 0.2f;
+                                break;
+                            case 3:
+                                break;
+                            case 4:
+                                buff -= 0.1f;
+                                break;
+                            case 5:
+                                buff += 0.3f;
+                                break;
+                            case 6:
+                                buff += 0.2f;
+                                break;
+                        }
+                        break;
+                    case 4:
+                        switch (planetID)
+                        {
+                            case 1:
+                                buff -= 0.3f;
+                                break;
+                            case 2:
+                                buff -= 0.1f;
+                                break;
+                            case 3:
+                                buff += 0.2f;
+                                break;
+                            case 4:
+                                break;
+                            case 5:
+                                buff -= 0.1f;
+                                break;
+                            case 6:
+                                buff -= 0.2f;
+                                break;
+                        }
+                        break;
+                    case 5:
+                        switch (planetID)
+                        {
+                            case 1:
+                                buff += 0.3f;
+                                break;
+                            case 2:
+                                buff -= 0.2f;
+                                break;
+                            case 3:
+                                buff += 0.1f;
+                                break;
+                            case 4:
+                                buff -= 0.2f;
+                                break;
+                            case 5:
+                                break;
+                            case 6:
+                                buff -= 0.1f;
+                                break;
+                        }
+                        break;
+                    case 6:
+                        switch (planetID)
+                        {
+                            case 1:
+                                buff -= 0.1f;
+                                break;
+                            case 2:
+                                buff += 0.2f;
+                                break;
+                            case 3:
+                                buff += 0.3f;
+                                break;
+                            case 4:
+                                buff -= 0.3f;
+                                break;
+                            case 5:
+                                buff -= 0.2f;
+                                break;
+                            case 6:
+                                break;
+                        }
+                        break;
+                }
+
+                planetValue += (int)(result * (1 + buff));
                 altaVariabilaimDead = true; 
             }
 
@@ -582,7 +858,149 @@ namespace QuasarConvoy.States
                 item.count--;
                 query = "SELECT AvgPrice FROM [Items] WHERE ID = " + item.itemID;
                 int result = int.Parse(dBManager.SelectElement(query));
-                planetValue -= result;
+
+                query = "SELECT PlanetID FROM [Items] WHERE ID = " + item.itemID;
+                int id = int.Parse(dBManager.SelectElement(query));
+
+                float buff = 0f;
+                switch (id)
+                {
+                    case 1:
+                        switch (planetID)
+                        {
+                            case 1:
+                                break;
+                            case 2:
+                                buff -= 0.2f;
+                                break;
+                            case 3:
+                                buff -= 0.3f;
+                                break;
+                            case 4:
+                                buff += 0.1f;
+                                break;
+                            case 5:
+                                buff -= 0.2f;
+                                break;
+                            case 6:
+                                buff += 0.3f;
+                                break;
+                        }
+                        break;
+                    case 2:
+                        switch (planetID)
+                        {
+                            case 1:
+                                buff -= 0.2f;
+                                break;
+                            case 2:
+                                break;
+                            case 3:
+                                buff -= 0.1f;
+                                break;
+                            case 4:
+                                buff += 0.3f;
+                                break;
+                            case 5:
+                                buff -= 0.4f;
+                                break;
+                            case 6:
+                                buff -= 0.1f;
+                                break;
+                        }
+                        break;
+                    case 3:
+                        switch (planetID)
+                        {
+                            case 1:
+                                buff -= 0.3f;
+                                break;
+                            case 2:
+                                buff -= 0.2f;
+                                break;
+                            case 3:
+                                break;
+                            case 4:
+                                buff -= 0.1f;
+                                break;
+                            case 5:
+                                buff += 0.3f;
+                                break;
+                            case 6:
+                                buff += 0.2f;
+                                break;
+                        }
+                        break;
+                    case 4:
+                        switch (planetID)
+                        {
+                            case 1:
+                                buff -= 0.3f;
+                                break;
+                            case 2:
+                                buff -= 0.1f;
+                                break;
+                            case 3:
+                                buff += 0.2f;
+                                break;
+                            case 4:
+                                break;
+                            case 5:
+                                buff -= 0.1f;
+                                break;
+                            case 6:
+                                buff -= 0.2f;
+                                break;
+                        }
+                        break;
+                    case 5:
+                        switch (planetID)
+                        {
+                            case 1:
+                                buff += 0.3f;
+                                break;
+                            case 2:
+                                buff -= 0.2f;
+                                break;
+                            case 3:
+                                buff += 0.1f;
+                                break;
+                            case 4:
+                                buff -= 0.2f;
+                                break;
+                            case 5:
+                                break;
+                            case 6:
+                                buff -= 0.1f;
+                                break;
+                        }
+                        break;
+                    case 6:
+                        switch (planetID)
+                        {
+                            case 1:
+                                buff -= 0.1f;
+                                break;
+                            case 2:
+                                buff += 0.2f;
+                                break;
+                            case 3:
+                                buff += 0.3f;
+                                break;
+                            case 4:
+                                buff -= 0.3f;
+                                break;
+                            case 5:
+                                buff -= 0.2f;
+                                break;
+                            case 6:
+                                break;
+                        }
+                        break;
+                }
+
+                planetValue -= (int)(result * (1 + buff));
+
                 foreach (List<Item> list in planetInventoryRows)
                 {
                     if (list != null)
@@ -610,7 +1028,155 @@ namespace QuasarConvoy.States
                 item.count--;
                 query = "SELECT AvgPrice FROM [Items] WHERE ID = " + item.itemID;
                 int result = int.Parse(dBManager.SelectElement(query));
-                userValue -= result;
+
+                query = "SELECT PlanetID FROM [Items] WHERE ID = " + item.itemID;
+                int id = int.Parse(dBManager.SelectElement(query));
+
+                float buff = 0f;
+                switch (id)
+                {
+                    case 1:
+                        switch (planetID)
+                        {
+                            case 1:
+                                buff -= 0.5f;
+                                break;
+                            case 2:
+                                buff += 0.2f;
+                                break;
+                            case 3:
+                                buff += 0.3f;
+                                break;
+                            case 4:
+                                buff -= 0.1f;
+                                break;
+                            case 5:
+                                buff += 0.2f;
+                                break;
+                            case 6:
+                                buff -= 0.3f;
+                                break;
+                        }
+                        break;
+                    case 2:
+                        switch (planetID)
+                        {
+                            case 1:
+                                buff += 0.2f;
+                                break;
+                            case 2:
+                                buff -= 0.5f;
+                                break;
+                            case 3:
+                                buff += 0.1f;
+                                break;
+                            case 4:
+                                buff -= 0.3f;
+                                break;
+                            case 5:
+                                buff += 0.4f;
+                                break;
+                            case 6:
+                                buff += 0.1f;
+                                break;
+                        }
+                        break;
+                    case 3:
+                        switch (planetID)
+                        {
+                            case 1:
+                                buff += 0.3f;
+                                break;
+                            case 2:
+                                buff += 0.2f;
+                                break;
+                            case 3:
+                                buff -= 0.5f;
+                                break;
+                            case 4:
+                                buff += 0.1f;
+                                break;
+                            case 5:
+                                buff -= 0.3f;
+                                break;
+                            case 6:
+                                buff -= 0.2f;
+                                break;
+                        }
+                        break;
+                    case 4:
+                        switch (planetID)
+                        {
+                            case 1:
+                                buff += 0.3f;
+                                break;
+                            case 2:
+                                buff += 0.1f;
+                                break;
+                            case 3:
+                                buff -= 0.2f;
+                                break;
+                            case 4:
+                                buff -= 0.5f;
+                                break;
+                            case 5:
+                                buff += 0.1f;
+                                break;
+                            case 6:
+                                buff += 0.2f;
+                                break;
+                        }
+                        break;
+                    case 5:
+                        switch (planetID)
+                        {
+                            case 1:
+                                buff -= 0.3f;
+                                break;
+                            case 2:
+                                buff += 0.2f;
+                                break;
+                            case 3:
+                                buff -= 0.1f;
+                                break;
+                            case 4:
+                                buff += 0.2f;
+                                break;
+                            case 5:
+                                buff -= 0.5f;
+                                break;
+                            case 6:
+                                buff += 0.1f;
+                                break;
+                        }
+                        break;
+                    case 6:
+                        switch (planetID)
+                        {
+                            case 1:
+                                buff += 0.1f;
+                                break;
+                            case 2:
+                                buff -= 0.2f;
+                                break;
+                            case 3:
+                                buff -= 0.3f;
+                                break;
+                            case 4:
+                                buff += 0.3f;
+                                break;
+                            case 5:
+                                buff += 0.2f;
+                                break;
+                            case 6:
+                                buff -= 0.5f;
+                                break;
+                        }
+                        break;
+                }
+
+                userValue -= (int)(result * (id + buff));
+
                 foreach (List<Item> list in userInventoryRows)
                 {
                     if (list != null)
@@ -635,6 +1201,7 @@ namespace QuasarConvoy.States
         private void TradeButton_Click(object sender, EventArgs e)
         {
             //if (userValue >= planetValue)
+            if(transactionCurrencyValue <= userCurrency && userValue >= planetValue)
             {
                 List<Item> userInventory = new List<Item>();
                 List<Item> planetInventory = new List<Item>();
@@ -654,6 +1221,7 @@ namespace QuasarConvoy.States
 
                 game.ChangeStates(new TradeLoadingState(game, graphicsDevice, contentManager, userInventory, planetInventory, planetID, transactionCurrencyValue, planetCurrencyValue));
             }
+            else { invalidMessage = true; }
         }
 
         private void CurrencyScrollDown_Click(object sender, EventArgs e)

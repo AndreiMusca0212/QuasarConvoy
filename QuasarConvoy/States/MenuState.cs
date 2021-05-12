@@ -68,7 +68,7 @@ namespace QuasarConvoy.States
 
             spriteBatch.End();
         }
-
+            
         public override void PostUpdate(GameTime gameTime)
         {
             //reminder, delete sprites when not needed

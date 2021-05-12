@@ -68,7 +68,7 @@ namespace QuasarConvoy.States
                     query = "UPDATE [UserInventory] SET ItemCount = " + (count + item.count) + " WHERE ItemID = " + id + ";";
                 }
                 else
-                    query = "INSERT INTO [UserInventory] VALUES(1, " + item.count + ", 1, " + id + ", 1);";
+                    query = "INSERT INTO [UserInventory] VALUES(1, " + item.count + ", " + id + ", 1);";
                 dBManager.QueryIUD(query);
             }
 
