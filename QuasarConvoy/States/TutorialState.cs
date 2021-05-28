@@ -18,7 +18,7 @@ namespace QuasarConvoy.States
         public TutorialState(Game1 _game, GraphicsDevice _graphicsDevice, ContentManager _contentManager) : base(_game, _graphicsDevice, _contentManager)
         {
             font = contentManager.Load<SpriteFont>("Fonts/Font");
-            controls = "W - Move Forward \n S - Move Backward \n D - RotateRight \n W - Rotate Left \n F - Open trade/Interact \n Space - Shoot";
+            controls = " W - Move Forward \n S - Move Backward \n D - RotateRight \n W - Rotate Left \n T - Change Perspective \n F - Open trade/Interact \n Space - Shoot";
             menus = "M - Map \n I - Inventory";
         }
 

@@ -15,12 +15,13 @@ namespace QuasarConvoy.Managers
 {
     public class CombatManager
     {
+        const int baseInterval = 70;
         List<Projectile> projectiles = new List<Projectile>();
         ContentManager content;
         Random random = new Random();
         public float DangerRangeUpperBound = 130000;
         public float DangerRangeLowerBound = 40000;
-        public double EncounterInterval=150;
+        public double EncounterInterval=baseInterval;
         double encounterTimer = 0f;
         int lastCount = 0;
         public CombatManager(ContentManager con)
@@ -219,7 +220,10 @@ namespace QuasarConvoy.Managers
                 encounterTimer = 0;
                 if (game.GetPlayerPos().Length() > DangerRangeLowerBound && game.GetPlayerPos().Length() < DangerRangeUpperBound)
                 {
-                    SpawnConfiguration(game._enemies, GenerateOutViewPosition(game.Camera), random.Next(1, 9));
+                    if(lastCount>7)
+                        SpawnConfiguration(game._enemies, GenerateOutViewPosition(game.Camera), random.Next(1, 7));
+                    else
+                        SpawnConfiguration(game._enemies, GenerateOutViewPosition(game.Camera), random.Next(1, lastCount));
                     foreach (var ship in game._enemies)
                     {
                         if (!ship.hasHealthbar)
@@ -239,13 +243,13 @@ namespace QuasarConvoy.Managers
             {
                 lastCount = game._convoy.Count;
                 if(lastCount != 0)
-                    EncounterInterval = 150 / lastCount;
+                    EncounterInterval = baseInterval / lastCount;
             }
             foreach (var proj in projectiles)
             {
                 proj.Update(gameTime, cam);
             }
-            encounterTimer += gameTime.ElapsedGameTime.TotalSeconds;
+            encounterTimer += gameTime.ElapsedGameTime.TotalSeconds*random.Next(0,2);
             SpawnEnemies(game);
             DamageDetect(ships);
             CleanUp();
