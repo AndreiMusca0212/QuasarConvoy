@@ -19,7 +19,7 @@ CONTACT
 GIT
 
 	ULTIMELE VERSIUNI STABILE ALE QUASAR CONVOY SUNT ÎNCĂRCATE PE GIT HUB, MASTER BRANCH.
-	https://github.com/AndreiTheMagic/QuasarConvoy.git
+	https://github.com/AndreiMusca0212/QuasarConvoy.git
 
 INSTALARE
 
